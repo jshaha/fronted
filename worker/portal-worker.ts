@@ -29,7 +29,8 @@ function log(msg: string) {
 async function getBrowser(): Promise<Browser> {
   if (browser && browser.isConnected()) return browser;
   const headed = config.portalRunner === 'headed';
-  browser = await chromium.launch({ headless: !headed, args: headed ? ['--window-size=1180,900'] : [] });
+  // Containers ship a 64 MB /dev/shm, which crashes Chromium; use /tmp instead.
+  browser = await chromium.launch({ headless: !headed, args: headed ? ['--window-size=1180,900'] : ['--disable-dev-shm-usage'] });
   log(`chromium launched (${headed ? 'headed' : 'headless'})`);
   return browser;
 }
