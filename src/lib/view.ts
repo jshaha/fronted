@@ -1,4 +1,5 @@
 /** Read model for the simulator: one JSON snapshot of everything on screen. */
+import type { PortalFormView } from './portal/virtualPortal';
 import { asc, desc, eq } from 'drizzle-orm';
 import path from 'node:path';
 import { getDb } from './db/client';
@@ -42,7 +43,7 @@ export type RequestView = {
   card: { last4: string; limitCents: number; allowedCategories: string[]; expiresAt: string; status: string } | null;
   transaction: { amountCents: number; merchantName: string; merchantCategory: string; settledAt: string; resolution: string | null } | null;
   receipt: { url: string; totalCents: number | null; outcome: string | null; flags: ReceiptFlag[]; merchant: string | null; date: string | null } | null;
-  filing: { status: string; confirmationId: string | null; attempts: number; lastError: string | null; idempotencyKey: string; latestScreenshot: string | null; formType: string } | null;
+  filing: { status: string; confirmationId: string | null; attempts: number; lastError: string | null; idempotencyKey: string; latestScreenshot: string | null; latestForm: PortalFormView | null; formType: string } | null;
   approvals: { decision: string; amountCents: number | null; note: string | null; precedentId: string | null; criterionId: string | null; memberName: string; createdAt: string }[];
 };
 
@@ -82,7 +83,15 @@ export function buildState(opts: { auditLimit?: number } = {}): AppState {
   const approvals = db.select().from(s.approvals).orderBy(asc(s.approvals.id)).all();
   const auditRows = db.select().from(s.auditLog).orderBy(desc(s.auditLog.id)).limit(opts.auditLimit ?? 500).all().reverse();
   const lastShotByRequest = new Map<number, string>();
-  for (const a of auditRows) if (a.screenshot && a.requestId) lastShotByRequest.set(a.requestId, a.screenshot);
+  const lastFormByRequest = new Map<number, PortalFormView>();
+  for (const a of auditRows) {
+    if (!a.requestId) continue;
+    if (a.screenshot) lastShotByRequest.set(a.requestId, a.screenshot);
+    if (a.kind === 'browser' && a.dataJson?.includes('"portalForm"')) {
+      const form = j<{ portalForm?: PortalFormView }>(a.dataJson, {}).portalForm;
+      if (form) lastFormByRequest.set(a.requestId, form);
+    }
+  }
 
   const requests: RequestView[] = reqs.map((r) => {
     const line = lines.find((l) => l.id === r.lineId);
@@ -131,7 +140,7 @@ export function buildState(opts: { auditLimit?: number } = {}): AppState {
         ? { url: `/api/uploads/${path.basename(receipt.filePath)}`, totalCents: receipt.totalCents, outcome: receipt.outcome, flags: j<ReceiptFlag[]>(receipt.flagsJson, []), merchant: rx?.merchant_name ?? null, date: rx?.receipt_date ?? null }
         : null,
       filing: filing
-        ? { status: filing.status, confirmationId: filing.confirmationId, attempts: filing.attempts, lastError: filing.lastError, idempotencyKey: filing.idempotencyKey, latestScreenshot: lastShotByRequest.get(r.id) ?? null, formType: filing.formType }
+        ? { status: filing.status, confirmationId: filing.confirmationId, attempts: filing.attempts, lastError: filing.lastError, idempotencyKey: filing.idempotencyKey, latestScreenshot: lastShotByRequest.get(r.id) ?? null, latestForm: lastFormByRequest.get(r.id) ?? null, formType: filing.formType }
         : null,
       approvals: approvals
         .filter((a) => a.requestId === r.id)

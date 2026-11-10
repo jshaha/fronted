@@ -3,7 +3,7 @@
  * Read lazily so tests and scripts can set process.env before first use.
  */
 export type ClaudeMode = 'live' | 'replay';
-export type PortalRunner = 'headed' | 'headless';
+export type PortalRunner = 'simulated' | 'headed' | 'headless';
 export type ClaudeSite = 'extractor' | 'receipt' | 'advisor' | 'planner';
 
 const DEFAULT_MODEL = 'claude-sonnet-5-5';
@@ -34,7 +34,8 @@ export const config = {
     return int('REPLAY_LATENCY_MS', 450);
   },
   get portalRunner(): PortalRunner {
-    return process.env.PORTAL_RUNNER === 'headless' ? 'headless' : 'headed';
+    const v = process.env.PORTAL_RUNNER;
+    return v === 'headed' || v === 'headless' ? v : 'simulated';
   },
   get portalUrl(): string {
     return process.env.PORTAL_URL || `http://localhost:${process.env.PORT || 3000}/mock-portal`;

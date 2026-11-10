@@ -23,7 +23,7 @@ export type FilingOutcome = { confirmationId: string; duplicate: boolean; rounds
 
 const DUPLICATE_RE = /already submitted \(confirmation (ASUC-EXP-[0-9-]+)\)/;
 
-function describeStep(st: PlanStep): string {
+export function describeStep(st: PlanStep): string {
   const target = `${st.target.role} “${st.target.name}”`;
   return st.value_ref ? `${st.action} ${target} ← payload.${st.value_ref}` : `${st.action} ${target}`;
 }
@@ -36,6 +36,40 @@ async function resolve(page: Page, st: PlanStep): Promise<Locator> {
   const n = await loc.count();
   if (n !== 1) throw new Error(`target ${st.target.role} “${st.target.name}” resolved to ${n} elements (need exactly 1)`);
   return loc;
+}
+
+type PlanLog = (title: string, data?: unknown, extra?: { latencyMs?: number; model?: string; mode?: string }) => void;
+
+/** Claude plans, code validates; a rejected or invalid plan falls back to the scripted one. */
+export async function choosePlan(snap: FormSnapshot, payload: FilingPayload, round: number, log: PlanLog): Promise<PortalPlan> {
+  const forced = process.env.PLANNER === 'scripted';
+  if (!forced) {
+    try {
+      const res = await planFill(snap, payload);
+      log(`Claude planned ${res.data.steps.length} steps${res.data.submits ? ' and a submit' : ''}`, { fixtureKey: res.fixtureKey, recording: res.recordingPath, plan: res.data }, {
+        latencyMs: res.latencyMs,
+        model: res.model,
+        mode: res.mode,
+      });
+      const v = validatePlan(res.data, snap, payload);
+      if (v.ok) {
+        log(`Code validated the plan: every value is a payload reference, every target matches exactly one control, no navigation`, { steps: v.plan.steps.map(describeStep) });
+        return v.plan;
+      }
+      log(`Code REJECTED the plan → using the scripted fallback`, { errors: v.errors });
+    } catch (err) {
+      if (err instanceof ReplayMissingError) throw err;
+      if (!(err instanceof ModelOutputError)) throw err;
+      log(`Planner output invalid twice → using the scripted fallback`, { error: err.message });
+    }
+  } else {
+    log('PLANNER=scripted: using the scripted plan', { fixtureKey: plannerFixtureKey(snap, payload) });
+  }
+  const fb = scriptedPlan(snap, payload);
+  const v = validatePlan(fb, snap, payload);
+  if (!v.ok) throw new Error(`Scripted plan failed validation: ${v.errors.join('; ')}`);
+  log(`Scripted fallback plan: ${fb.steps.length} steps (round ${round})`, { steps: fb.steps.map(describeStep) });
+  return v.plan;
 }
 
 export class FilingAgent {
@@ -76,6 +110,10 @@ export class FilingAgent {
     const plans: PortalPlan[] = [];
     for (let round = 1; round <= config.maxPlannerRounds; round++) {
       const snap = await captureSnapshot(this.page);
+      if (process.env.DUMP_SNAPSHOTS) {
+        fs.mkdirSync(process.env.DUMP_SNAPSHOTS, { recursive: true });
+        fs.writeFileSync(path.join(process.env.DUMP_SNAPSHOTS, `${this.job.payload.payment_method.startsWith('ASUC') ? 'card' : 'personal'}-r${round}.json`), JSON.stringify(snap, null, 2));
+      }
       if (snap.confirmationId) return { confirmationId: snap.confirmationId, duplicate: false, rounds: round - 1, plans };
       const dup = snap.controls.map((c) => c.error ?? '').join(' ').match(DUPLICATE_RE);
       if (dup) {
@@ -100,36 +138,8 @@ export class FilingAgent {
     throw new Error(`No confirmation after ${config.maxPlannerRounds} rounds. Last errors: ${last.controls.filter((c) => c.error).map((c) => c.error).join(' ') || 'none'}`);
   }
 
-  private async getPlan(snap: FormSnapshot, round: number): Promise<PortalPlan> {
-    const payload = this.job.payload;
-    const forced = process.env.PLANNER === 'scripted';
-    if (!forced) {
-      try {
-        const res = await planFill(snap, payload);
-        this.log(`Claude planned ${res.data.steps.length} steps${res.data.submits ? ' and a submit' : ''}`, { fixtureKey: res.fixtureKey, recording: res.recordingPath, plan: res.data }, undefined, {
-          latencyMs: res.latencyMs,
-          model: res.model,
-          mode: res.mode,
-        });
-        const v = validatePlan(res.data, snap, payload);
-        if (v.ok) {
-          this.log(`Code validated the plan: every value is a payload reference, every target matches exactly one control, no navigation`, { steps: v.plan.steps.map(describeStep) });
-          return v.plan;
-        }
-        this.log(`Code REJECTED the plan → using the scripted fallback`, { errors: v.errors });
-      } catch (err) {
-        if (err instanceof ReplayMissingError) throw err;
-        if (!(err instanceof ModelOutputError)) throw err;
-        this.log(`Planner output invalid twice → using the scripted fallback`, { error: err.message });
-      }
-    } else {
-      this.log('PLANNER=scripted: using the scripted plan', { fixtureKey: plannerFixtureKey(snap, payload) });
-    }
-    const fb = scriptedPlan(snap, payload);
-    const v = validatePlan(fb, snap, payload);
-    if (!v.ok) throw new Error(`Scripted plan failed validation: ${v.errors.join('; ')}`);
-    this.log(`Scripted fallback plan: ${fb.steps.length} steps (round ${round})`, { steps: fb.steps.map(describeStep) });
-    return v.plan;
+  private getPlan(snap: FormSnapshot, round: number): Promise<PortalPlan> {
+    return choosePlan(snap, this.job.payload, round, (title, data, extra) => this.log(title, data, undefined, extra));
   }
 
   private async execute(st: PlanStep, i: number, n: number, round: number): Promise<void> {

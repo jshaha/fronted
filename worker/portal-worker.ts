@@ -1,19 +1,21 @@
 /**
  * Portal worker — a separate Node process. Polls portal_filings for queued jobs
- * and runs the Playwright browser agent against the mock ASUC portal.
- * Never runs inside a Next.js route.
+ * and files each one in the mock ASUC portal. Never runs inside a Next.js route.
  *
- *   PORTAL_RUNNER=headed|headless   (default headed)
+ *   PORTAL_RUNNER=simulated   (default) no browser: the agent fills an in-process
+ *                             copy of the portal form; the UI draws it filling in
+ *   PORTAL_RUNNER=headed|headless   a real Chromium via Playwright
  *   CLAUDE_MODE=live|replay         (default replay)
  */
-import { chromium, type Browser } from 'playwright';
+import type { Browser } from 'playwright';
 import { eq, sql } from 'drizzle-orm';
 import { getDb, getSqlite } from '../src/lib/db/client';
 import * as s from '../src/lib/db/schema';
 import { config } from '../src/lib/config';
 import { audit } from '../src/lib/audit';
 import { nowIso } from '../src/lib/clock';
-import { FilingAgent } from '../src/lib/portal/agent';
+import { FilingAgent, type FilingOutcome } from '../src/lib/portal/agent';
+import { SimulatedFilingAgent } from '../src/lib/portal/simulatedAgent';
 import { completeFiling, failFiling } from '../src/lib/pipeline/filingResults';
 import { sweepExpired } from '../src/lib/pipeline/sweep';
 import type { FilingPayload } from '../src/lib/types';
@@ -28,10 +30,11 @@ function log(msg: string) {
 
 async function getBrowser(): Promise<Browser> {
   if (browser && browser.isConnected()) return browser;
+  // Loaded lazily so the simulated runner never needs Playwright's browsers.
+  const { chromium } = await import('playwright');
   const headed = config.portalRunner === 'headed';
-  // Containers: a 64 MB /dev/shm crashes Chromium, and small plans (512 MB)
-  // leave no room for a multi-process browser, so run it as one process.
-  browser = await chromium.launch({ headless: !headed, args: headed ? ['--window-size=1180,900'] : ['--disable-dev-shm-usage', '--single-process', '--no-zygote', '--disable-gpu', '--disable-extensions'] });
+  // Containers ship a 64 MB /dev/shm, which crashes Chromium; use /tmp instead.
+  browser = await chromium.launch({ headless: !headed, args: headed ? ['--window-size=1180,900'] : ['--disable-dev-shm-usage'] });
   log(`chromium launched (${headed ? 'headed' : 'headless'})`);
   return browser;
 }
@@ -67,6 +70,22 @@ async function runJob(job: typeof s.portalFilings.$inferSelect) {
     title: `Portal worker picked up ${job.idempotencyKey} (attempt ${job.attempts}, ${config.portalRunner}, Claude ${config.claudeMode})`,
   });
   const started = Date.now();
+  const job2 = { id: job.id, requestId: job.requestId, attempt: job.attempts, payload };
+  try {
+    const out: FilingOutcome =
+      config.portalRunner === 'simulated' ? await new SimulatedFilingAgent(job2).run() : await runInBrowser(job2);
+    getDb().update(s.portalFilings).set({ planJson: JSON.stringify(out.plans) }).where(eq(s.portalFilings.id, job.id)).run();
+    await completeFiling(job.id, out.confirmationId, { duplicate: out.duplicate, durationMs: Date.now() - started });
+    log(`job ${job.id} filed: ${out.confirmationId}${out.duplicate ? ' (duplicate)' : ''} in ${Date.now() - started}ms`);
+  } catch (err) {
+    const msg = (err as Error).message;
+    log(`job ${job.id} failed: ${msg}`);
+    audit({ requestId: job.requestId, traceId: `filing-${job.id}`, kind: 'error', title: `Filing attempt failed: ${msg.slice(0, 160)}`, data: { error: msg } });
+    await failFiling(job.id, msg);
+  }
+}
+
+async function runInBrowser(job: ConstructorParameters<typeof FilingAgent>[1]): Promise<FilingOutcome> {
   const b = await getBrowser();
   const context = await b.newContext({ viewport: { width: 1160, height: 860 } });
   await context.addInitScript('window.__name = window.__name || function (f) { return f; };');
@@ -79,17 +98,9 @@ async function runJob(job: typeof s.portalFilings.$inferSelect) {
     return ok ? route.continue() : route.abort();
   });
   try {
-    const agent = new FilingAgent(page, { id: job.id, requestId: job.requestId, attempt: job.attempts, payload });
-    const out = await agent.run();
-    getDb().update(s.portalFilings).set({ planJson: JSON.stringify(out.plans) }).where(eq(s.portalFilings.id, job.id)).run();
-    await completeFiling(job.id, out.confirmationId, { duplicate: out.duplicate, durationMs: Date.now() - started });
-    log(`job ${job.id} filed: ${out.confirmationId}${out.duplicate ? ' (duplicate)' : ''} in ${Date.now() - started}ms`);
+    const out = await new FilingAgent(page, job).run();
     if (config.portalRunner === 'headed') await page.waitForTimeout(1200);
-  } catch (err) {
-    const msg = (err as Error).message;
-    log(`job ${job.id} failed: ${msg}`);
-    audit({ requestId: job.requestId, traceId: `filing-${job.id}`, kind: 'error', title: `Filing attempt failed: ${msg.slice(0, 160)}`, data: { error: msg } });
-    await failFiling(job.id, msg);
+    return out;
   } finally {
     await context.close().catch(() => {});
   }

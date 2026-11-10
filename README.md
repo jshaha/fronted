@@ -18,7 +18,7 @@ The reimbursement branch (officer already paid from personal funds) needs no ass
 - `npx playwright install chromium` (for the portal worker)
 - `npm run demo` — runs reset, seeding, app on port 3000, and portal worker in replay mode (offline), then opens http://localhost:3000/simulator
 - `npm run demo -- --prod` for a production server
-- `PORTAL_RUNNER=headless npm run demo` hides the Chromium window
+- `PORTAL_RUNNER=headed npm run demo` files with a real, visible Chromium window instead of the in-app portal
 
 ## Scripts
 
@@ -45,7 +45,7 @@ The reimbursement branch (officer already paid from personal funds) needs no ass
 | `ANTHROPIC_API_KEY` | Required only for `CLAUDE_MODE=live` and `npm run record` |
 | `CLAUDE_MODEL_*` | Model overrides per site (extractor, receipt, advisor, planner); default `claude-sonnet-5-5` |
 | `REPLAY_LATENCY_MS` | Artificial delay for replayed calls; default 450 |
-| `PORTAL_RUNNER` | `headed` (visible Chromium) or `headless` (CI/e2e) |
+| `PORTAL_RUNNER` | `simulated` (default: in-app portal, no browser), `headed` (visible Chromium) or `headless` |
 | `PORTAL_URL` | Where the worker files reports; default `http://localhost:3000/mock-portal` |
 | `PORTAL_ALLOWED_ORIGINS` | Allowlist for portal navigation; default `http://localhost:3000,http://127.0.0.1:3000` |
 | `PORTAL_STEP_DELAY_MS` | Slow down browser steps so humans can follow; default 350 |
@@ -105,7 +105,7 @@ In replay mode, use the suggested prompts, sample receipts, and the "Use demo no
 
 5. **1:50–2:10 | Simulate purchase.** *Officer taps "Simulate purchase" → $48.73 charged to Telegraph Slice Co. The receipt photo upload prompts appear.* The app sends a normalized `transaction.settled` event.
 
-6. **2:10–2:30 | Receipt read and reconciled.** *Officer uploads pizza receipt. Claude reads items and amounts; code checks alcohol (none), reconciles within $0.50, and queues the filing job.* The Chromium window opens, showing the portal form filing in real time, hitting a date-format validation error, fixing it, and getting a confirmation ID. *The budget panel updates; the request moves to filed.*
+6. **2:10–2:30 | Receipt read and reconciled.** *Officer uploads pizza receipt. Claude reads items and amounts; code checks alcohol (none), reconciles within $0.50, and queues the filing job.* The portal form appears in the officer chat and fills in field by field as the agent works: it hits a date-format validation error, fixes it, resubmits, and gets a confirmation ID. *The budget panel updates; the request moves to filed.*
 
 7. **2:30–2:50 | Learning loop.** Officer: "Can I spend $60 on pizza for next Thursday's recruiting GM?" *Echo-back passes. Advisor now supports (no caution), citing P-31.* This shows the org's own judgment carries forward.
 

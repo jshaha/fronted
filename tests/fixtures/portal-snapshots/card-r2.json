@@ -1,0 +1,152 @@
+{
+  "url": "http://localhost:3000/mock-portal",
+  "title": "New Expense Report — ASUC Portal (Mock)",
+  "formVersion": "v1",
+  "alerts": [
+    "Your submission has errors. Please correct the highlighted fields and resubmit. Card Last 4 Digits is required. Transaction Date must be entered as MM/DD/YYYY."
+  ],
+  "controls": [
+    {
+      "role": "textbox",
+      "name": "Organization Name",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "Neurotech@Berkeley"
+    },
+    {
+      "role": "textbox",
+      "name": "ASUC Account Number",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "ASUC-ORG-4471"
+    },
+    {
+      "role": "textbox",
+      "name": "Submitted By (Full Name)",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "Maya Chen"
+    },
+    {
+      "role": "textbox",
+      "name": "Submitter Email",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "maya.chen@berkeley.edu"
+    },
+    {
+      "role": "textbox",
+      "name": "External Reference",
+      "required": false,
+      "section": "Section 1: Organization Information",
+      "value": "FRONTED-R-12"
+    },
+    {
+      "role": "combobox",
+      "name": "Payment Method",
+      "required": true,
+      "section": "Section 2: Payment Information",
+      "options": [
+        "-- Select --",
+        "ASUC Program Card",
+        "Personal Funds (Reimbursement)"
+      ],
+      "value": "ASUC Program Card"
+    },
+    {
+      "role": "textbox",
+      "name": "Card Last 4 Digits",
+      "required": true,
+      "section": "Section 2: Payment Information",
+      "value": "",
+      "error": "Card Last 4 Digits is required."
+    },
+    {
+      "role": "textbox",
+      "name": "Vendor / Merchant",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "value": "Telegraph Slice Co."
+    },
+    {
+      "role": "textbox",
+      "name": "Transaction Date",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "value": "2026-11-12",
+      "error": "Transaction Date must be entered as MM/DD/YYYY."
+    },
+    {
+      "role": "textbox",
+      "name": "Amount (USD)",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "value": "48.73"
+    },
+    {
+      "role": "combobox",
+      "name": "Budget Line",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "options": [
+        "-- Select --",
+        "Food & Events",
+        "Project Hardware",
+        "Marketing"
+      ],
+      "value": "Food & Events"
+    },
+    {
+      "role": "textbox",
+      "name": "Event Name",
+      "required": false,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": "Fall GM #6: Recruiting GM"
+    },
+    {
+      "role": "textbox",
+      "name": "Number of Attendees",
+      "required": false,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": "12"
+    },
+    {
+      "role": "textbox",
+      "name": "Attendees / Participants",
+      "required": true,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": "12 Neurotech@Berkeley members (RSVP list on file)"
+    },
+    {
+      "role": "textbox",
+      "name": "Business Purpose",
+      "required": true,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": "Pizza for Fall GM #6: Recruiting GM on 11/12/2026 (12 att…"
+    },
+    {
+      "role": "file",
+      "name": "Itemized Receipt",
+      "required": true,
+      "section": "Section 5: Documentation & Certification",
+      "value": "cdb836c7d7147547.png"
+    },
+    {
+      "role": "checkbox",
+      "name": "I certify that this expense complies with the ASUC Finance Policy",
+      "required": true,
+      "section": "Section 5: Documentation & Certification",
+      "checked": true
+    },
+    {
+      "role": "button",
+      "name": "Submit Expense Report",
+      "required": false
+    },
+    {
+      "role": "button",
+      "name": "Save Draft",
+      "required": false
+    }
+  ]
+}

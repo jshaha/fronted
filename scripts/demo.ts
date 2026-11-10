@@ -3,7 +3,7 @@
  * replay mode (offline). Ctrl-C stops both.
  *   npm run demo -- --prod      build once, run the production server
  *   npm run demo -- --prod --skip-build   run an existing build (Docker)
- *   PORTAL_RUNNER=headless npm run demo
+ *   PORTAL_RUNNER=headed npm run demo   real Chromium window instead of the in-app portal
  */
 import { execSync } from 'node:child_process';
 import { resetAll } from './reset';
@@ -19,7 +19,7 @@ async function main() {
   const stack = await startStack({
     port,
     mode: prod ? 'prod' : 'dev',
-    env: { CLAUDE_MODE: process.env.CLAUDE_MODE!, PORTAL_RUNNER: process.env.PORTAL_RUNNER || 'headed' },
+    env: { CLAUDE_MODE: process.env.CLAUDE_MODE!, PORTAL_RUNNER: process.env.PORTAL_RUNNER || 'simulated' },
   });
   console.log(`\n  Fronted is running (CLAUDE_MODE=${process.env.CLAUDE_MODE}).\n  Simulator:   ${stack.baseUrl}/simulator\n  Mock portal: ${stack.baseUrl}/mock-portal\n  Ctrl-C to stop.\n`);
   const stop = async () => {

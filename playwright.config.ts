@@ -36,7 +36,7 @@ export default defineConfig({
         PORT: '3100',
         PORTAL_URL: 'http://localhost:3100/mock-portal',
         PORTAL_ALLOWED_ORIGINS: 'http://localhost:3100,http://127.0.0.1:3100',
-        PORTAL_RUNNER: 'headless',
+        PORTAL_RUNNER: 'simulated',
         MOCK_PORTAL_FAST: '1',
         PORTAL_STEP_DELAY_MS: '0',
       },

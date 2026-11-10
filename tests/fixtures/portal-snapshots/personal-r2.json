@@ -1,0 +1,168 @@
+{
+  "url": "http://localhost:3000/mock-portal",
+  "title": "New Expense Report — ASUC Portal (Mock)",
+  "formVersion": "v1",
+  "alerts": [
+    "Your submission has errors. Please correct the highlighted fields and resubmit. Payee Full Name is required. Payee Email is required. Payee Student ID (SID) is required. Transaction Date must be entered as MM/DD/YYYY."
+  ],
+  "controls": [
+    {
+      "role": "textbox",
+      "name": "Organization Name",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "Neurotech@Berkeley"
+    },
+    {
+      "role": "textbox",
+      "name": "ASUC Account Number",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "ASUC-ORG-4471"
+    },
+    {
+      "role": "textbox",
+      "name": "Submitted By (Full Name)",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "Arjun Patel"
+    },
+    {
+      "role": "textbox",
+      "name": "Submitter Email",
+      "required": true,
+      "section": "Section 1: Organization Information",
+      "value": "arjun.patel@berkeley.edu"
+    },
+    {
+      "role": "textbox",
+      "name": "External Reference",
+      "required": false,
+      "section": "Section 1: Organization Information",
+      "value": "FRONTED-R-12"
+    },
+    {
+      "role": "combobox",
+      "name": "Payment Method",
+      "required": true,
+      "section": "Section 2: Payment Information",
+      "options": [
+        "-- Select --",
+        "ASUC Program Card",
+        "Personal Funds (Reimbursement)"
+      ],
+      "value": "Personal Funds (Reimbursement)"
+    },
+    {
+      "role": "textbox",
+      "name": "Payee Full Name",
+      "required": true,
+      "section": "Section 2a: Payee Information (Reimbursements Only)",
+      "value": "",
+      "error": "Payee Full Name is required."
+    },
+    {
+      "role": "textbox",
+      "name": "Payee Email",
+      "required": true,
+      "section": "Section 2a: Payee Information (Reimbursements Only)",
+      "value": "",
+      "error": "Payee Email is required."
+    },
+    {
+      "role": "textbox",
+      "name": "Payee Student ID (SID)",
+      "required": true,
+      "section": "Section 2a: Payee Information (Reimbursements Only)",
+      "value": "",
+      "error": "Payee Student ID (SID) is required."
+    },
+    {
+      "role": "textbox",
+      "name": "Vendor / Merchant",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "value": "Ohm & Co. Electronics"
+    },
+    {
+      "role": "textbox",
+      "name": "Transaction Date",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "value": "2026-11-06",
+      "error": "Transaction Date must be entered as MM/DD/YYYY."
+    },
+    {
+      "role": "textbox",
+      "name": "Amount (USD)",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "value": "86.40"
+    },
+    {
+      "role": "combobox",
+      "name": "Budget Line",
+      "required": true,
+      "section": "Section 3: Expense Details",
+      "options": [
+        "-- Select --",
+        "Food & Events",
+        "Project Hardware",
+        "Marketing"
+      ],
+      "value": "Project Hardware"
+    },
+    {
+      "role": "textbox",
+      "name": "Event Name",
+      "required": false,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": ""
+    },
+    {
+      "role": "textbox",
+      "name": "Number of Attendees",
+      "required": false,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": ""
+    },
+    {
+      "role": "textbox",
+      "name": "Attendees / Participants",
+      "required": true,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": "Neurotech@Berkeley EEG headset project team"
+    },
+    {
+      "role": "textbox",
+      "name": "Business Purpose",
+      "required": true,
+      "section": "Section 4: Business Purpose & Attendees",
+      "value": "EEG electrode supplies for the EEG headset project, Neuro…"
+    },
+    {
+      "role": "file",
+      "name": "Itemized Receipt",
+      "required": true,
+      "section": "Section 5: Documentation & Certification",
+      "value": "950d936dd0f0e848.png"
+    },
+    {
+      "role": "checkbox",
+      "name": "I certify that this expense complies with the ASUC Finance Policy",
+      "required": true,
+      "section": "Section 5: Documentation & Certification",
+      "checked": true
+    },
+    {
+      "role": "button",
+      "name": "Submit Expense Report",
+      "required": false
+    },
+    {
+      "role": "button",
+      "name": "Save Draft",
+      "required": false
+    }
+  ]
+}

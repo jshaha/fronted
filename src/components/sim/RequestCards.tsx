@@ -1,7 +1,8 @@
 'use client';
 /** Cards rendered under agent messages. All read live request state, so they update in place. */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RequestView } from '@/lib/view';
+import type { PortalFormView } from '@/lib/portal/virtualPortal';
 import { useApp } from '@/components/AppState';
 import { Button, Icon, IdChip, Money, Pill, StatusPill, cx } from '@/components/ui';
 import { formatCents, parseMoneyToCents } from '@/lib/money';
@@ -297,7 +298,66 @@ export function ReceiptBlock({ req, memberId }: { req: RequestView; memberId: st
 
 /* ----------------------------------------------------------------- filing */
 
-const FILING_STEPS = ['Queued', 'Browser agent filling the portal', 'Confirmation received'];
+const FILING_STEPS = ['Queued', 'Agent filling the portal', 'Confirmation received'];
+
+/** The ASUC form as the agent sees it, redrawn after every step it takes. */
+function MiniPortal({ form }: { form: PortalFormView }) {
+  const box = useRef<HTMLDivElement>(null);
+  const activeLabel = form.sections.flatMap((s) => s.fields).find((f) => f.active)?.label;
+  useEffect(() => {
+    const el = box.current?.querySelector<HTMLElement>('[data-active="true"]');
+    if (!el || !box.current) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    box.current.scrollTo({ top: el.offsetTop - box.current.clientHeight / 2, behavior: reduce ? 'auto' : 'smooth' });
+  }, [activeLabel, form.alerts.length]);
+
+  return (
+    <figure className="overflow-hidden rounded-lg border border-[#c9cdd3] bg-white text-[#1f2328] dark:border-line" aria-label="Mock ASUC portal, as the agent is filling it">
+      <figcaption className="flex items-center gap-2 bg-[#003262] px-2.5 py-1.5 text-[11.5px] font-semibold text-white">
+        <span className="rounded-sm bg-[#fdb515] px-1 text-[10px] font-bold text-[#003262]">ASUC</span>
+        New Expense Report <span className="ml-auto font-normal opacity-75">mock portal · no browser</span>
+      </figcaption>
+      {form.confirmationId ? (
+        <p className="m-2.5 rounded border border-[#2e7d32]/40 bg-[#e8f5e9] px-2.5 py-2 text-[12.5px] text-[#1b5e20]">
+          Expense report submitted. Confirmation <strong className="num font-mono">{form.confirmationId}</strong>
+        </p>
+      ) : (
+        form.alerts.length > 0 && (
+          <p role="status" className="mx-2.5 mt-2.5 rounded border border-[#c62828]/40 bg-[#fdecea] px-2.5 py-1.5 text-[12px] leading-snug text-[#b71c1c]">
+            {form.alerts[0]}
+          </p>
+        )
+      )}
+      <div ref={box} className="relative max-h-64 overflow-y-auto overscroll-contain px-2.5 pb-2.5">
+        {form.sections.map((sec) => (
+          <fieldset key={sec.title} className="mt-2.5 rounded border border-[#d8dbe0] px-2 pb-1.5">
+            <legend className="px-1 text-[11px] font-semibold text-[#3b4048]">{sec.title}</legend>
+            <dl className="grid grid-cols-[minmax(0,9.5rem)_minmax(0,1fr)] gap-x-2 gap-y-1 text-[11.5px]">
+              {sec.fields.map((fld) => (
+                <div key={fld.label} data-active={fld.active ? 'true' : undefined} className="contents">
+                  <dt className={cx('truncate py-0.5 text-[#57606a]', fld.error && 'text-[#b71c1c]')} title={fld.label}>
+                    {fld.label}
+                  </dt>
+                  <dd
+                    className={cx(
+                      'min-w-0 truncate rounded-sm border px-1.5 py-0.5 font-mono text-[11px] transition-colors duration-200 motion-reduce:transition-none',
+                      fld.active ? 'border-[#6d5efc] bg-[#f1efff] ring-2 ring-[#6d5efc]/40' : fld.error ? 'border-[#c62828] bg-[#fdecea]' : 'border-[#d0d7de] bg-[#f6f8fa]',
+                      !fld.value && 'text-[#8c959f]',
+                    )}
+                    title={fld.error ?? fld.value}
+                  >
+                    {fld.kind === 'checkbox' ? (fld.value ? '☑ certified' : '☐') : fld.value || '—'}
+                    {fld.error && <span className="sr-only"> Error: {fld.error}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </fieldset>
+        ))}
+      </div>
+    </figure>
+  );
+}
 
 export function FilingBlock({ req, treasurerId }: { req: RequestView; treasurerId?: string }) {
   const { act } = useApp();
@@ -316,7 +376,7 @@ export function FilingBlock({ req, treasurerId }: { req: RequestView; treasurerI
           {f.confirmationId ? <Pill tone="pass">Filed</Pill> : failed ? <Pill tone="warn">Needs a human</Pill> : <Pill tone="live" dot>Working</Pill>}
         </span>
       </div>
-      <div className="flex flex-col gap-3 p-3.5 sm:flex-row">
+      <div className={cx('flex flex-col gap-3 p-3.5', !f.latestForm && 'sm:flex-row')}>
         <ol className="flex min-w-0 flex-1 flex-col gap-1.5 text-[13px]">
           {FILING_STEPS.map((s, i) => (
             <li key={s} className={cx('flex items-center gap-2', i > stage && 'text-faint')}>
@@ -359,7 +419,9 @@ export function FilingBlock({ req, treasurerId }: { req: RequestView; treasurerI
             </li>
           )}
         </ol>
-        {f.latestScreenshot && (
+        {f.latestForm ? (
+          <MiniPortal form={f.latestForm} />
+        ) : f.latestScreenshot && (
           <a href={`/api/screenshots/${f.latestScreenshot}`} target="_blank" rel="noreferrer" className="shrink-0" aria-label="Open the latest portal screenshot">
             <img
               src={`/api/screenshots/${f.latestScreenshot}`}

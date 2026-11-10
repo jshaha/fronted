@@ -1,19 +1,19 @@
-# Fronted: web app + Playwright portal worker in one container.
-# The Playwright base image ships Node and Chromium with its system libraries.
-FROM mcr.microsoft.com/playwright:v1.65.0-noble
+# Fronted: web app + portal worker in one container. The worker runs in
+# simulated mode (no browser), so a plain Node image is enough.
+FROM node:22-bookworm-slim
+
+# better-sqlite3 falls back to compiling when no prebuilt binary matches.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
     CLAUDE_MODE=replay \
-    PORTAL_RUNNER=headless \
+    PORTAL_RUNNER=simulated \
     ISSUER=mock
-
-# better-sqlite3 has no prebuilt binary for this Node version, so compile it.
-RUN apt-get update \
- && apt-get install -y --no-install-recommends build-essential \
- && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
 # Dev dependencies are needed at runtime: tsx runs the worker and launcher.
