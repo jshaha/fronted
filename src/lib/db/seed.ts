@@ -120,6 +120,23 @@ const PrecedentSeed = z.array(
     semester: z.string(),
   }),
 );
+const SignalSeed = z.array(
+  z
+    .object({
+      id: z.string().regex(/^(SL|EM|CAL|MIN)-\d{2}$/),
+      source: z.enum(['slack', 'email', 'calendar', 'notes']),
+      location: z.string(),
+      author: z.string(),
+      daysAgo: z.number().int().min(0),
+      subject: z.string().optional(),
+      body: z.string().min(1),
+      lineId: z.string().optional(),
+      purposeTags: z.array(z.enum(PURPOSE_TAGS)).default([]),
+      eventId: z.string().optional(),
+    })
+    .strict(),
+);
+
 const EventSeed = z.array(
   z.object({
     id: z.string(),
@@ -146,6 +163,7 @@ const ALL_TABLES = [
   'requests',
   'ledger_entries',
   'precedents',
+  'signals',
   'org_criteria',
   'org_hard_rules',
   'school_rules',
@@ -158,7 +176,7 @@ const ALL_TABLES = [
 ];
 
 /** Delete every row (keeps the schema), then load the seed. Safe while the app is running. */
-export function resetAndSeed(): { lines: number; precedents: number; criteria: number; events: number } {
+export function resetAndSeed(): { lines: number; precedents: number; criteria: number; events: number; signals: number } {
   const sqlite = getSqlite();
   const wipe = sqlite.transaction(() => {
     sqlite.pragma('foreign_keys = OFF');
@@ -179,6 +197,7 @@ export function seed() {
   const criteria = CriteriaSeed.parse(readJson('criteria.json'));
   const precedents = PrecedentSeed.parse(readJson('precedents.json'));
   const events = EventSeed.parse(readJson('events.json'));
+  const signals = SignalSeed.parse(readJson('signals.json'));
   const orgId = orgSeed.org.id;
   const createdAt = nowIso();
 
@@ -234,8 +253,27 @@ export function seed() {
         })),
       )
       .run();
+
+    // Org inputs (Slack, email, calendar, notes), dated relative to today like the events.
+    tx.insert(s.signals)
+      .values(
+        signals.map((g) => ({
+          id: g.id,
+          orgId,
+          source: g.source,
+          location: g.location,
+          author: g.author,
+          subject: g.subject ?? null,
+          body: g.body,
+          lineId: g.lineId ?? null,
+          purposeTags: JSON.stringify(g.purposeTags),
+          eventId: g.eventId ?? null,
+          sentAt: `${addDays(today, -g.daysAgo)}T17:00:00.000Z`,
+        })),
+      )
+      .run();
   });
 
   void createdAt;
-  return { lines: lines.length, precedents: precedents.length, criteria: criteria.length, events: events.length };
+  return { lines: lines.length, precedents: precedents.length, criteria: criteria.length, events: events.length, signals: signals.length };
 }

@@ -115,7 +115,7 @@ export const ADVISOR_SCHEMA_VERSION = 1;
 
 export const CitationSchema = z
   .object({
-    type: z.enum(['rule', 'past_spending', 'budget_stat']),
+    type: z.enum(['rule', 'past_spending', 'budget_stat', 'signal']),
     id: z.string().min(1),
   })
   .strict();

@@ -102,6 +102,23 @@ export const precedents = sqliteTable('precedents', {
   createdFromRequestId: integer('created_from_request_id'),
 });
 
+/** Org inputs (Slack, email, calendar, meeting notes) the Advisor may cite as context. */
+export const signals = sqliteTable('signals', {
+  id: text('id').primaryKey(),
+  orgId: text('org_id').notNull(),
+  source: text('source', { enum: ['slack', 'email', 'calendar', 'notes'] }).notNull(),
+  /** Channel, inbox, calendar or document the item came from. */
+  location: text('location').notNull(),
+  author: text('author').notNull(),
+  subject: text('subject'),
+  body: text('body').notNull(),
+  lineId: text('line_id'),
+  /** JSON array of purpose tags this item is about. */
+  purposeTags: text('purpose_tags').notNull().default('[]'),
+  eventId: text('event_id'),
+  sentAt: text('sent_at').notNull(),
+});
+
 export const events = sqliteTable('events', {
   id: text('id').primaryKey(),
   orgId: text('org_id').notNull(),

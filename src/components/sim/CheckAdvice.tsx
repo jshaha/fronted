@@ -50,6 +50,17 @@ export function CheckPanel({ req, compact }: { req: RequestView; compact?: boole
   );
 }
 
+/** Org inputs are cited by source prefix: SL-01 (Slack), EM-01 (email), CAL-01 (calendar), MIN-01 (notes). */
+const SIGNAL_SOURCE: Record<string, { name: string; glyph: string }> = {
+  SL: { name: 'Slack message', glyph: '#' },
+  EM: { name: 'Email', glyph: '@' },
+  CAL: { name: 'Calendar event', glyph: '◷' },
+  MIN: { name: 'Meeting notes', glyph: '¶' },
+};
+const signalSource = (id: string) => SIGNAL_SOURCE[id.split('-')[0]] ?? { name: 'Org input', glyph: '•' };
+const citeKind = (c: { type: string; id: string }) =>
+  c.type === 'past_spending' ? 'precedent' : c.type === 'rule' ? 'criterion / rule' : c.type === 'signal' ? `org input · ${signalSource(c.id).name}` : 'computed by code';
+
 function CiteChip({ cite, open, onToggle, controls }: { cite: { type: string; id: string; label: string; detail: string }; open: boolean; onToggle: () => void; controls: string }) {
   return (
     <button
@@ -60,10 +71,19 @@ function CiteChip({ cite, open, onToggle, controls }: { cite: { type: string; id
       title={cite.detail}
       className={cx(
         'inline-flex min-h-6 items-center gap-1 rounded-md px-1.5 font-mono text-[11.5px] font-medium ring-1 ring-inset transition-colors duration-150',
-        open ? 'bg-[color:var(--advice-accent)] text-white ring-transparent' : 'bg-surface text-advice-ink ring-[color:var(--advice-line)] hover:ring-[color:var(--advice-accent)]',
+        open
+          ? 'bg-[color:var(--advice-accent)] text-white ring-transparent'
+          : cite.type === 'signal'
+            ? 'bg-[color:var(--lime)]/25 text-ink ring-[color:var(--lime)] hover:ring-[color:var(--advice-accent)]'
+            : 'bg-surface text-advice-ink ring-[color:var(--advice-line)] hover:ring-[color:var(--advice-accent)]',
       )}
     >
-      <span className="sr-only">{cite.type === 'past_spending' ? 'Precedent' : cite.type === 'rule' ? 'Rule' : 'Number'} </span>
+      <span className="sr-only">{cite.type === 'past_spending' ? 'Precedent' : cite.type === 'rule' ? 'Rule' : cite.type === 'signal' ? signalSource(cite.id).name : 'Number'} </span>
+      {cite.type === 'signal' && (
+        <span aria-hidden className="opacity-70">
+          {signalSource(cite.id).glyph}
+        </span>
+      )}
       {cite.label}
     </button>
   );
@@ -88,7 +108,7 @@ function Reason({ reason, index }: { reason: RenderedReason; index: number }) {
         <div id={`${uid}-detail`} aria-live="polite">
           {open && (
             <div className="mt-2 rounded-lg border border-advice-line bg-surface px-2.5 py-2 text-[12.5px] leading-snug text-ink-2 animate-rise">
-              <span className="font-mono font-semibold text-advice-ink">{open.label}</span> <span className="text-muted">· {open.type === 'past_spending' ? 'precedent' : open.type === 'rule' ? 'criterion / rule' : 'computed by code'}</span>
+              <span className="font-mono font-semibold text-advice-ink">{open.label}</span> <span className="text-muted">· {citeKind(open)}</span>
               <p className="mt-0.5 break-words">{open.detail}</p>
             </div>
           )}

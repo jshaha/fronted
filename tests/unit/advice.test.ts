@@ -158,8 +158,35 @@ describe('advisor', () => {
         ['P-14', { label: 'GM Sep 17', detail: 'Approved $58.80' }],
         ['P-19', { label: 'GM Oct 15', detail: 'Approved $74.40' }],
       ]),
+      signals: new Map([['SL-01', { label: 'SL-01', detail: 'Slack #events, Priya Raman: 41 people signed the interest sheet' }]]),
       stats,
     };
+
+    it('accepts a reason that cites an org input (Slack) by ID', () => {
+      const out = verifyAdvice(
+        { verdict: 'caution', headline: 'Turnout may beat RSVPs.', reasons: [{ text: 'Tabling interest suggests walk-ins.', cites: [{ type: 'signal', id: 'SL-01' }] }], suggested_amount_stat: null },
+        known,
+      );
+      expect(out.reasons).toHaveLength(1);
+      expect(out.reasons[0].cites[0]).toMatchObject({ type: 'signal', id: 'SL-01', label: 'SL-01' });
+    });
+
+    it('drops a reason that cites an org input that does not exist', () => {
+      const out = verifyAdvice(
+        {
+          verdict: 'caution',
+          headline: 'x',
+          reasons: [
+            { text: 'Email says it is fine.', cites: [{ type: 'signal', id: 'EM-99' }] },
+            { text: 'Above the recent average.', cites: [{ type: 'past_spending', id: 'P-14' }] },
+          ],
+          suggested_amount_stat: null,
+        },
+        known,
+      );
+      expect(out.reasons).toHaveLength(1);
+      expect(out.dropped[0].why).toMatch(/EM-99/);
+    });
 
     it('accepts valid advice with all placeholders resolved', () => {
       const output: AdvisorOutput = {

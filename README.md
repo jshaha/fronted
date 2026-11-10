@@ -85,6 +85,12 @@ officer message ──► Extractor (Claude) ──► echo-back ──► RuleE
 
 Playwright runs in a separate worker process polling a job row in SQLite—never in a route. Portal navigation is locked to an allowlist. Idempotency is enforced three ways: unique `idempotency_key` on filing jobs, the mock portal rejecting duplicate `external_ref`, and the worker skipping jobs that already have a `confirmation_id`. Money is stored as integer cents with a ledger tracking commit, release, card_settled, filed, and adjust entries.
 
+## Org inputs
+
+The Advisor also reads what the org is saying right now: Slack (`SL-`), email (`EM-`), calendar (`CAL-`) and meeting notes (`MIN-`). Code picks the items for each request with a fixed query (same event, same purpose tag, or same budget line, last 14 days, newest 6), and the Advisor cites them by ID like precedents. Code drops any reason that cites an ID that doesn't exist. Messages are context, never approval.
+
+In this build every connector reads seeded items (`data/seed/signals.json`) through `src/lib/signals/sources.ts`. A live Slack or Gmail connector would write into the same `signals` table. The treasurer view lists the inputs and marks the ones cited in pending advice.
+
 ## Replays
 
 Default mode: `CLAUDE_MODE=replay` (offline). Recordings live at `fixtures/replays/<site>/<fixtureKey>.v<schemaVersion>.json`, keyed by site + fixtureKey + schemaVersion (not a prompt hash). Sites and keys: `extractor` (message slug), `receipt` (image sha256 prefix), `advisor` (message slug + fingerprint of knowledge rows), `planner` (snapshot structure hash + payload shape).

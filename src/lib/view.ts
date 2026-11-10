@@ -1,5 +1,6 @@
 /** Read model for the simulator: one JSON snapshot of everything on screen. */
 import type { PortalFormView } from './portal/virtualPortal';
+import { allSignals, CONNECTORS } from './signals/sources';
 import { asc, desc, eq } from 'drizzle-orm';
 import path from 'node:path';
 import { getDb } from './db/client';
@@ -61,6 +62,10 @@ export type AppState = {
   requests: RequestView[];
   audit: AuditView[];
   knowledge: { precedents: number; criteria: number; latestPrecedent: { id: string; note: string | null } | null };
+  orgInputs: {
+    connectors: { id: string; label: string; scope: string; mode: 'seeded' | 'live'; count: number }[];
+    items: { id: string; source: string; location: string; author: string; subject: string | null; body: string; sentAt: string }[];
+  };
 };
 
 const j = <T,>(v: string | null, fallback: T): T => (v ? (JSON.parse(v) as T) : fallback);
@@ -203,6 +208,13 @@ export function buildState(opts: { auditLimit?: number } = {}): AppState {
       createdAt: a.createdAt,
     })),
     knowledge: { precedents: precs.length, criteria: db.select().from(s.orgCriteria).all().length, latestPrecedent: latest ? { id: latest.id, note: latest.treasurerNote } : null },
+    orgInputs: (() => {
+      const rows = allSignals().sort((a, b) => (a.sentAt < b.sentAt ? 1 : a.sentAt > b.sentAt ? -1 : a.id.localeCompare(b.id)));
+      return {
+        connectors: CONNECTORS.map((c) => ({ ...c, count: rows.filter((g) => g.source === c.id).length })),
+        items: rows.map((g) => ({ id: g.id, source: g.source, location: g.location, author: g.author, subject: g.subject, body: g.body, sentAt: g.sentAt })),
+      };
+    })(),
   };
 }
 

@@ -9,6 +9,7 @@ import { formatCents } from '../money';
 import { config } from '../config';
 import { shortHash } from '../claude/client';
 import type { KnownIds } from './verify';
+import { allSignals, describeSignal } from '../signals/sources';
 
 export type CriterionRow = typeof orgCriteria.$inferSelect;
 export type PrecedentRow = typeof precedents.$inferSelect;
@@ -65,5 +66,7 @@ export function knownIdsFromDb(stats: KnownIds['stats']): KnownIds {
     rules.set(`sheet row ${l.sourceRow}`, { label: `sheet row ${l.sourceRow}`, detail: `${l.name}: allocated ${formatCents(l.allocatedCents)}` });
   const pastSpending = new Map<string, { label: string; detail: string }>();
   for (const p of db.select().from(precedents).all()) pastSpending.set(p.id, { label: p.id, detail: describePrecedent(p) });
-  return { rules, pastSpending, stats };
+  const signalMap = new Map<string, { label: string; detail: string }>();
+  for (const g of allSignals()) signalMap.set(g.id, { label: g.id, detail: describeSignal(g) });
+  return { rules, pastSpending, signals: signalMap, stats };
 }

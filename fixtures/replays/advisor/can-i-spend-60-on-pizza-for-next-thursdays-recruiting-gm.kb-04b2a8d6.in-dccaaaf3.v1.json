@@ -1,12 +1,12 @@
 {
   "model": "claude-sonnet-5-5",
   "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "recordedAt": "2026-11-10T23:04:45.307Z",
   "site": "advisor",
-  "fixtureKey": "can-i-spend-60-on-pizza-for-next-thursdays-recruiting-gm.kb-04b2a8d6",
+  "fixtureKey": "can-i-spend-60-on-pizza-for-next-thursdays-recruiting-gm.kb-04b2a8d6.in-dccaaaf3",
   "schemaVersion": 1,
-  "latencyMs": 3120,
-  "scenario": "Next GM after the P-31 note: support, cites P-31.",
+  "latencyMs": 3260,
+  "scenario": "Next GM after the P-31 note: support, cites P-31 plus the lab-tours calendar event and Slack turnout.",
   "output": {
     "verdict": "support",
     "headline": "This fits the exception the treasurer set for recruiting GMs on P-31.",
@@ -25,7 +25,24 @@
         ]
       },
       {
-        "text": "That note is newer than C-02 and C-03, so it reads as an exception for recruiting GMs rather than a change for regular ones.",
+        "text": "It is another recruiting GM (CAL-02), and Slack expects the Calapalooza table to send more people than the RSVPs show (SL-03), the same pattern as last week's tabling (SL-01).",
+        "cites": [
+          {
+            "type": "signal",
+            "id": "CAL-02"
+          },
+          {
+            "type": "signal",
+            "id": "SL-03"
+          },
+          {
+            "type": "signal",
+            "id": "SL-01"
+          }
+        ]
+      },
+      {
+        "text": "That note is newer than C-02 and C-03, so it reads as an exception for recruiting GMs rather than a change for regular ones, which matches the board notes (MIN-01).",
         "cites": [
           {
             "type": "past_spending",
@@ -38,6 +55,10 @@
           {
             "type": "rule",
             "id": "C-03"
+          },
+          {
+            "type": "signal",
+            "id": "MIN-01"
           }
         ]
       },

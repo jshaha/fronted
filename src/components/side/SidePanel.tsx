@@ -3,6 +3,7 @@
 import { BudgetPanel } from './BudgetPanel';
 import { UnreconciledPanel } from './UnreconciledPanel';
 import { TracePanel } from './TracePanel';
+import { OrgInputsPanel } from './OrgInputsPanel';
 
 export function SidePanel() {
   return (
@@ -15,6 +16,10 @@ export function SidePanel() {
       {/* Unreconciled Panel */}
       <div className="flex-shrink-0">
         <UnreconciledPanel />
+      </div>
+
+      <div className="flex-shrink-0">
+        <OrgInputsPanel />
       </div>
 
       {/* Trace Panel - takes remaining height and scrolls internally */}

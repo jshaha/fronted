@@ -1,15 +1,15 @@
 {
   "model": "claude-sonnet-5-5",
   "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "recordedAt": "2026-11-10T23:02:42.686Z",
   "site": "advisor",
-  "fixtureKey": "can-i-spend-50-on-pizza-for-thursdays-gm.kb-717bd3aa",
+  "fixtureKey": "can-i-spend-50-on-pizza-for-thursdays-gm.kb-717bd3aa.in-f6b79da9",
   "schemaVersion": 1,
-  "latencyMs": 3120,
-  "scenario": "$50 GM pizza: caution from precedent, suggest $36.",
+  "latencyMs": 3480,
+  "scenario": "$50 GM pizza: caution from precedent, suggest $36; Slack and board notes flag the recruiting-GM exception for the treasurer.",
   "output": {
     "verdict": "caution",
-    "headline": "At [[S-per-head]] a head this runs well above recent GMs; [[S-suggested]] would match the usual rate.",
+    "headline": "At [[S-per-head]] a head this runs above recent GMs; [[S-suggested]] fits the usual rate, though Slack points to more walk-ins for this recruiting GM.",
     "reasons": [
       {
         "text": "At [[S-per-head]] per RSVP for [[S-attendees]] RSVPs, this is above the last [[S-recent-count]] GMs, which averaged [[S-recent-avg-per-head]] a head (P-14, P-19).",
@@ -46,8 +46,20 @@
         ]
       },
       {
-        "text": "C-02 says to order against RSVPs, not hoped-for walk-ins, and P-09 was denied for over-ordering a regular GM.",
+        "text": "This is the recruiting GM (CAL-01): Slack shows far more interest-sheet signups than RSVPs (SL-01), and the board left recruiting GMs to the treasurer's call (MIN-01). C-02 still says to order against RSVPs, and P-09 was denied for over-ordering.",
         "cites": [
+          {
+            "type": "signal",
+            "id": "CAL-01"
+          },
+          {
+            "type": "signal",
+            "id": "SL-01"
+          },
+          {
+            "type": "signal",
+            "id": "MIN-01"
+          },
           {
             "type": "rule",
             "id": "C-02"

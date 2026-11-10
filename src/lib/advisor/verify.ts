@@ -8,6 +8,7 @@ import type { AdvisorOutput, BudgetStat, Citation, DroppedReason, RenderedCitati
 export type KnownIds = {
   rules: Map<string, { label: string; detail: string }>;
   pastSpending: Map<string, { label: string; detail: string }>;
+  signals: Map<string, { label: string; detail: string }>;
   stats: BudgetStat[];
 };
 
@@ -54,6 +55,10 @@ function resolveCite(c: Citation, known: KnownIds): RenderedCitation | null {
   if (c.type === 'past_spending') {
     const p = known.pastSpending.get(c.id);
     return p ? { ...c, ...p } : null;
+  }
+  if (c.type === 'signal') {
+    const g = known.signals.get(c.id);
+    return g ? { ...c, ...g } : null;
   }
   const s = known.stats.find((x) => x.id === c.id);
   return s ? { ...c, label: s.id, detail: `${s.label}: ${s.display}` } : null;

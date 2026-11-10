@@ -198,3 +198,15 @@ test('filing is idempotent: the portal rejects a duplicate external reference', 
   expect(res.status()).toBe(409);
   expect((await res.json()).duplicateOf).toBe(closed.filing!.confirmationId);
 });
+
+test('advice cites the org inputs (Slack, calendar, board notes) that code selected for the request', async ({ page, request }) => {
+  await officerSays(page, DEMO.gmPizza);
+  const r = await waitStatus(request, 'R-12', ['awaiting_approval']);
+  const cited = new Set(r.recommendation!.reasons.flatMap((x) => x.cites.filter((c) => c.type === 'signal').map((c) => c.id)));
+  expect([...cited].sort()).toEqual(['CAL-01', 'MIN-01', 'SL-01']);
+  // An unrelated message (the photo reminder in #general) is never in context.
+  const trace = (await state(request)).audit.find((a) => a.title.includes('org inputs in context'));
+  expect((trace!.data as { orgInputs: string[] }).orgInputs).not.toContain('SL-05');
+  await page.goto('/treasurer');
+  await expect(page.getByRole('region', { name: 'Org inputs' }).getByText('Cited in pending advice')).toHaveCount(3);
+});

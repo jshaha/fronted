@@ -1,0 +1,68 @@
+[
+  {
+    "id": "SL-01", "source": "slack", "location": "#events", "author": "Priya Raman", "daysAgo": 1,
+    "body": "Tabled on Sproul today. 41 people signed the interest sheet for Thursday's recruiting GM, but the RSVP form only shows 12. Most said they'd just show up.",
+    "lineId": "L-FOOD", "purposeTags": ["gm_food"], "eventId": "E-GM6"
+  },
+  {
+    "id": "SL-02", "source": "slack", "location": "#events", "author": "Maya Chen", "daysAgo": 3,
+    "body": "Booked Dwinelle 155 for Thursday's GM. Room holds 60.",
+    "eventId": "E-GM6"
+  },
+  {
+    "id": "CAL-01", "source": "calendar", "location": "Neurotech@Berkeley events", "author": "Google Calendar", "daysAgo": 0,
+    "subject": "Fall GM #6: Recruiting GM",
+    "body": "Thursday 7–8pm, Dwinelle 155. Recruiting GM: intro talk and project fair. 12 RSVPs on the form.",
+    "eventId": "E-GM6"
+  },
+  {
+    "id": "EM-01", "source": "email", "location": "treasurer@ inbox", "author": "ASUC Finance Office", "daysAgo": 5,
+    "subject": "FA26 reminder: food receipts and rollover",
+    "body": "Reminder to registered student organizations: food purchases must list the number of attendees, and Fall allocations do not roll over into Spring.",
+    "lineId": "L-FOOD", "purposeTags": ["gm_food", "social_food", "event_food", "workshop_food"]
+  },
+  {
+    "id": "MIN-01", "source": "notes", "location": "Board meeting notes", "author": "Sam Okafor", "daysAgo": 6,
+    "subject": "Board sync",
+    "body": "Food: keep regular GMs near the usual per-head rate so Food & Events keeps a reserve for the end-of-semester social. Recruiting GMs are where new members come from; Jordan decides those case by case.",
+    "lineId": "L-FOOD", "purposeTags": ["gm_food", "social_food"]
+  },
+  {
+    "id": "CAL-02", "source": "calendar", "location": "Neurotech@Berkeley events", "author": "Google Calendar", "daysAgo": 0,
+    "subject": "Fall GM #7: Recruiting GM (lab tours)",
+    "body": "Next Thursday 7–8pm. Lab tours in Li Ka Shing. 14 RSVPs on the form.",
+    "eventId": "E-GM7"
+  },
+  {
+    "id": "SL-03", "source": "slack", "location": "#events", "author": "Priya Raman", "daysAgo": 0,
+    "body": "Lab tours GM next week is already at 14 RSVPs, and the Calapalooza table will send more people to it.",
+    "eventId": "E-GM7"
+  },
+  {
+    "id": "SL-04", "source": "slack", "location": "#hardware", "author": "Arjun Patel", "daysAgo": 4,
+    "body": "Ordered the dry EEG electrodes and gel from Ohm & Co. on my own card since the headset build is blocked on them. I'll send the receipt to Fronted.",
+    "lineId": "L-HW", "purposeTags": ["hardware_eeg"]
+  },
+  {
+    "id": "EM-02", "source": "email", "location": "treasurer@ inbox (forwarded by Arjun Patel)", "author": "Ohm & Co. Electronics", "daysAgo": 4,
+    "subject": "Order OC-20417 confirmed",
+    "body": "Order OC-20417: 2 dry electrode kits and 1 conductive gel, shipped to Arjun Patel. Order total matches the attached invoice.",
+    "lineId": "L-HW", "purposeTags": ["hardware_eeg"]
+  },
+  {
+    "id": "MIN-02", "source": "notes", "location": "Board meeting notes", "author": "Sam Okafor", "daysAgo": 6,
+    "subject": "Board sync",
+    "body": "EEG headset build: board approved buying materials as needed this semester. Arjun owns purchasing for the headset team.",
+    "lineId": "L-HW", "purposeTags": ["hardware_eeg"]
+  },
+  {
+    "id": "SL-05", "source": "slack", "location": "#general", "author": "Sam Okafor", "daysAgo": 2,
+    "body": "Reminder: group photo for the club website this Friday after lab."
+  },
+  {
+    "id": "EM-03", "source": "email", "location": "treasurer@ inbox", "author": "Bear Necessities Printing", "daysAgo": 2,
+    "subject": "Your flyer proof is ready",
+    "body": "Proof for 200 recruiting flyers is ready for review.",
+    "lineId": "L-MKT", "purposeTags": ["marketing_print"]
+  }
+]

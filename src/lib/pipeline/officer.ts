@@ -22,6 +22,7 @@ import { lineSummary } from '../ledger';
 import { computeBudgetStats } from '../advisor/budgetStats';
 import { applicableCriteria, relevantPrecedents } from '../advisor/knowledge';
 import { runAdvisor } from '../advisor/advisor';
+import { relevantSignals } from '../signals/sources';
 import { reconcileReceipt, type ReconcileResult } from '../receipts/reconcile';
 import { BadRequestError, ConflictError, ForbiddenError } from '../errors';
 import { applyEvent, newTraceId } from './core';
@@ -245,6 +246,7 @@ async function checkAndAdvise(req: RequestRow, r: Resolved, traceId: string, opt
   const tag = r.extraction.purpose_tag;
   const criteria = applicableCriteria(line.id, tag);
   const precs = relevantPrecedents(line.id, tag);
+  const inputs = relevantSignals({ lineId: line.id, purposeTag: tag, eventId: r.event?.id ?? null });
   const current = getRequest(req.id);
   const stats = computeBudgetStats({
     amountCents: current.amountCents!,
@@ -255,7 +257,7 @@ async function checkAndAdvise(req: RequestRow, r: Resolved, traceId: string, opt
     upcomingSameType: r.event ? { count: upcomingCountOfType(r.event.type), typeLabel: EVENT_TYPE_LABEL[r.event.type] ?? 'Events' } : undefined,
     daysSincePurchase: opts.purchaseDate ? Math.max(0, daysBetween(opts.purchaseDate, todayYmd())) : null,
   });
-  audit({ requestId: req.id, traceId, kind: 'advice', title: `Code computed ${stats.length} budget stats; ${criteria.length} criteria and ${precs.length} precedents in context`, data: { stats, criteria: criteria.map((c) => c.id), precedents: precs.map((p) => p.id) } });
+  audit({ requestId: req.id, traceId, kind: 'advice', title: `Code computed ${stats.length} budget stats; ${criteria.length} criteria, ${precs.length} precedents and ${inputs.length} org inputs in context`, data: { stats, criteria: criteria.map((c) => c.id), precedents: precs.map((p) => p.id), orgInputs: inputs.map((g) => g.id) } });
 
   let run;
   try {
@@ -273,6 +275,7 @@ async function checkAndAdvise(req: RequestRow, r: Resolved, traceId: string, opt
       stats,
       criteria,
       precedents: precs,
+      signals: inputs,
     });
   } catch (err) {
     if (err instanceof ReplayMissingError) {
