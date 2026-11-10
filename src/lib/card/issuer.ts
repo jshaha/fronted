@@ -1,6 +1,6 @@
 /**
  * CardIssuer interface. Field names are ours — modeled on a typical card-issuing
- * API, not claimed compatible with any vendor. Only the mock adapter exists.
+ * API. Adapters: mock (local) and ramp (Ramp Developer API, sandbox by default).
  */
 export type CreateCardInput = {
   requestShortId: string;
@@ -46,7 +46,7 @@ export type AuthorizationDeclinedEvent = {
 export type IssuerEvent = TransactionSettledEvent | AuthorizationDeclinedEvent;
 
 export interface CardIssuer {
-  readonly name: 'mock';
+  readonly name: 'mock' | 'ramp';
   createCard(input: CreateCardInput): Promise<IssuedCard>;
   getCard(externalCardId: string): Promise<IssuedCard>;
   terminateCard(externalCardId: string): Promise<IssuedCard>;

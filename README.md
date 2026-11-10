@@ -85,6 +85,10 @@ officer message ──► Extractor (Claude) ──► echo-back ──► RuleE
 
 Playwright runs in a separate worker process polling a job row in SQLite—never in a route. Portal navigation is locked to an allowlist. Idempotency is enforced three ways: unique `idempotency_key` on filing jobs, the mock portal rejecting duplicate `external_ref`, and the worker skipping jobs that already have a `confirmation_id`. Money is stored as integer cents with a ledger tracking commit, release, card_settled, filed, and adjust entries.
 
+## Ramp cards
+
+With `ISSUER=ramp` and Ramp sandbox credentials in `.env`, approval issues a real Ramp virtual card through the Vault API (`demo-vault-api.ramp.com`): a `TOTAL` spend limit of the approved amount plus the buffer, the line's merchant categories mapped to Ramp category codes (Alcohol and bars is never allowed), and a lock date. Only the last 4 digits are kept. After the single purchase the app terminates the card's fund (`funds:write`). If Ramp fails, the error is logged and a demo card is issued so the request is never stranded. Purchases are simulated against the card's restrictions, since the sandbox has no swipe API. See `.env.example` for the scopes.
+
 ## Org inputs
 
 The Advisor also reads what the org is saying right now: Slack (`SL-`), email (`EM-`), calendar (`CAL-`) and meeting notes (`MIN-`). Code picks the items for each request with a fixed query (same event, same purpose tag, or same budget line, last 14 days, newest 6), and the Advisor cites them by ID like precedents. Code drops any reason that cites an ID that doesn't exist. Messages are context, never approval.

@@ -10,6 +10,7 @@ import { getDb } from '../db/client';
 import { mockIssuerCards } from '../db/schema';
 import { nowIso, now } from '../clock';
 import type { CardIssuer, CreateCardInput, IssuedCard, IssuerEvent } from './issuer';
+import { config } from '../config';
 
 type Row = typeof mockIssuerCards.$inferSelect;
 
@@ -32,7 +33,7 @@ function last4For(id: string): string {
 }
 
 export class MockCardIssuer implements CardIssuer {
-  readonly name = 'mock' as const;
+  readonly name: 'mock' | 'ramp' = 'mock';
 
   async createCard(input: CreateCardInput): Promise<IssuedCard> {
     const externalCardId = `mc_${crypto.randomBytes(8).toString('hex')}`;
@@ -95,6 +96,10 @@ export class MockCardIssuer implements CardIssuer {
 
 let issuer: MockCardIssuer | null = null;
 export function getIssuer(): MockCardIssuer {
-  if (!issuer) issuer = new MockCardIssuer();
+  if (!issuer) {
+    // Lazy require keeps the Ramp adapter out of the module graph when unused.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    issuer = config.issuer === 'ramp' ? new (require('./rampIssuer') as typeof import('./rampIssuer')).RampCardIssuer() : new MockCardIssuer();
+  }
   return issuer;
 }

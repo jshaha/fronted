@@ -49,8 +49,8 @@ export const config = {
   get portalStepDelayMs(): number {
     return int('PORTAL_STEP_DELAY_MS', 350);
   },
-  get issuer(): 'mock' {
-    return 'mock';
+  get issuer(): 'mock' | 'ramp' {
+    return process.env.ISSUER === 'ramp' ? 'ramp' : 'mock';
   },
   get cardBufferPct(): number {
     return int('CARD_BUFFER_PCT', 20);

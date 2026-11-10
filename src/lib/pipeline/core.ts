@@ -13,7 +13,7 @@ import { config } from '../config';
 import { formatCents, withBuffer } from '../money';
 import { addDays, endOfLocalDayIso, prettyYmd, todayYmd } from '../dates';
 import { nowIso } from '../clock';
-import { getIssuer } from '../card/mockIssuer';
+import { getIssuer, MockCardIssuer } from '../card/mockIssuer';
 import { openCommitment, writeLedger } from '../ledger';
 import { buildFilingPayload, filingIdempotencyKey } from '../portal/payload';
 import { cardForRequest, eventById, getMember, getOrg, getRequest, getTreasurer, lineById, receiptForRequest, txnForRequest, updateRequest, type RequestRow } from './repo';
@@ -65,7 +65,12 @@ async function runEffect(req: RequestRow, e: Effect, ctx: EffectContext): Promis
     case 'terminate_card': {
       const card = cardForRequest(req.id);
       if (!card || card.status !== 'active') return;
-      await getIssuer().terminateCard(card.externalCardId);
+      try {
+        await getIssuer().terminateCard(card.externalCardId);
+      } catch (err) {
+        // Never strand the request on an issuer error; the card is closed locally either way.
+        audit({ requestId: req.id, traceId: ctx.traceId, kind: 'error', title: `Issuer could not terminate ••${card.last4}: ${(err as Error).message.slice(0, 160)}` });
+      }
       getDb().update(s.cards).set({ status: 'terminated' }).where(eq(s.cards.id, card.id)).run();
       audit({ requestId: req.id, traceId: ctx.traceId, kind: 'card', title: `card ••${card.last4} terminated`, data: { externalCardId: card.externalCardId } });
       return;
@@ -153,12 +158,23 @@ async function issueCard(req: RequestRow, approvedCents: number, ctx: EffectCont
   const expiresAt = endOfLocalDayIso(expiryDay);
   const allowed = JSON.parse(line.allowedCategories) as string[];
   const started = Date.now();
-  const issued = await getIssuer().createCard({ requestShortId: req.shortId, holderName: officer.name, limitCents, allowedCategories: allowed, expiresAt });
+  const input = { requestShortId: req.shortId, holderName: officer.name, limitCents, allowedCategories: allowed, expiresAt };
+  let issuerName = getIssuer().name;
+  let issued;
+  try {
+    issued = await getIssuer().createCard(input);
+  } catch (err) {
+    if (issuerName === 'mock') throw err;
+    // A live issuer failing must not strand an approved request: record the exact error, issue a demo card.
+    audit({ requestId: req.id, traceId: ctx.traceId, kind: 'error', title: `Ramp could not issue the card, using a demo card instead: ${(err as Error).message.slice(0, 200)}` });
+    issued = await new MockCardIssuer().createCard(input);
+    issuerName = 'mock';
+  }
   getDb()
     .insert(s.cards)
     .values({
       requestId: req.id,
-      issuer: 'mock',
+      issuer: issuerName,
       externalCardId: issued.externalCardId,
       last4: issued.last4,
       limitCents: issued.limitCents,
@@ -174,7 +190,7 @@ async function issueCard(req: RequestRow, approvedCents: number, ctx: EffectCont
     kind: 'card',
     title: `CardIssuer.createCard → ••${issued.last4}, limit ${formatCents(limitCents)}`,
     latencyMs: Date.now() - started,
-    data: { issuer: 'mock', approvedCents, bufferPct: config.cardBufferPct, limitCents, allowedCategories: allowed, expiresAt, externalCardId: issued.externalCardId },
+    data: { issuer: issuerName, approvedCents, bufferPct: config.cardBufferPct, limitCents, allowedCategories: allowed, expiresAt, externalCardId: issued.externalCardId },
   });
   await applyEvent(req.id, { type: 'CARD_ISSUED' }, ctx);
   postMessage({
