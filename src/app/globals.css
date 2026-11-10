@@ -1,0 +1,259 @@
+@import 'tailwindcss';
+
+/*
+ * Fronted design tokens. Warm "ledger paper" in light, graphite in dark.
+ * Two semantic families matter most:
+ *   --check-*  : code decisions (ink, ruled, monospace IDs)
+ *   --advice-* : Claude's advice (violet tint, never blocks)
+ */
+:root {
+  color-scheme: light;
+  --bg: #f6f5f1;
+  --bg-sunken: #efede7;
+  --surface: #ffffff;
+  --surface-2: #fbfaf7;
+  --ink: #15161a;
+  --ink-2: #3a3d44;
+  --muted: #676b73;
+  --faint: #9a9da4;
+  --line: rgb(21 22 26 / 0.09);
+  --line-strong: rgb(21 22 26 / 0.16);
+  --focus: #5b4cf0;
+
+  --brand: #15161a;
+  --brand-ink: #f6f5f1;
+  --lime: #d9f26b;
+  --lime-ink: #1d2400;
+
+  --pass: #17784a;
+  --pass-bg: #e6f4ec;
+  --fail: #b8322b;
+  --fail-bg: #fbeae8;
+  --warn: #8f5a00;
+  --warn-bg: #fdf1dc;
+  --info: #2f5fd0;
+  --info-bg: #e8eefc;
+
+  --check-bg: #f7f6f2;
+  --check-line: rgb(21 22 26 / 0.12);
+  --check-ink: #15161a;
+  --advice-bg: #f4f2ff;
+  --advice-line: rgb(91 76 240 / 0.22);
+  --advice-ink: #3b2fb8;
+  --advice-accent: #5b4cf0;
+
+  --shadow-sm: 0 1px 0 rgb(21 22 26 / 0.04), 0 1px 2px rgb(21 22 26 / 0.06);
+  --shadow-md: 0 1px 0 rgb(21 22 26 / 0.04), 0 4px 14px -4px rgb(21 22 26 / 0.12), 0 2px 4px -2px rgb(21 22 26 / 0.06);
+  --shadow-lg: 0 24px 48px -16px rgb(21 22 26 / 0.25), 0 4px 10px -4px rgb(21 22 26 / 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0e0f11;
+    --bg-sunken: #0a0b0c;
+    --surface: #16181b;
+    --surface-2: #1b1d21;
+    --ink: #eceef1;
+    --ink-2: #c9ccd2;
+    --muted: #949aa3;
+    --faint: #6b7079;
+    --line: rgb(255 255 255 / 0.08);
+    --line-strong: rgb(255 255 255 / 0.15);
+    --focus: #9d93ff;
+    --brand: #eceef1;
+    --brand-ink: #0e0f11;
+    --pass: #4fd18b;
+    --pass-bg: rgb(79 209 139 / 0.12);
+    --fail: #ff7a70;
+    --fail-bg: rgb(255 122 112 / 0.12);
+    --warn: #f2b14c;
+    --warn-bg: rgb(242 177 76 / 0.12);
+    --info: #8fb0ff;
+    --info-bg: rgb(143 176 255 / 0.12);
+    --check-bg: #131518;
+    --check-line: rgb(255 255 255 / 0.1);
+    --check-ink: #eceef1;
+    --advice-bg: rgb(124 112 255 / 0.09);
+    --advice-line: rgb(157 147 255 / 0.28);
+    --advice-ink: #c3bcff;
+    --advice-accent: #9d93ff;
+    --shadow-sm: 0 1px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 6px 18px -6px rgb(0 0 0 / 0.6);
+    --shadow-lg: 0 24px 48px -16px rgb(0 0 0 / 0.7);
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+  --color-bg: var(--bg);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-lime: var(--lime);
+  --color-lime-ink: var(--lime-ink);
+  --color-pass: var(--pass);
+  --color-pass-bg: var(--pass-bg);
+  --color-fail: var(--fail);
+  --color-fail-bg: var(--fail-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-check-bg: var(--check-bg);
+  --color-check-line: var(--check-line);
+  --color-advice-bg: var(--advice-bg);
+  --color-advice-line: var(--advice-line);
+  --color-advice-ink: var(--advice-ink);
+  --color-advice-accent: var(--advice-accent);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgb(91 76 240 / 0.15);
+  scroll-padding-top: 72px;
+}
+@media (pointer: fine) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button,
+a,
+input,
+select,
+textarea,
+label,
+summary {
+  touch-action: manipulation;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+select {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  scroll-margin-top: 72px;
+}
+
+/* Money and IDs always line up. */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 100;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: var(--brand-ink);
+  transition: transform 150ms ease;
+}
+.skip-link:focus {
+  transform: translateY(60px);
+}
+
+/* Motion: purposeful, compositor-only, and off when asked. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes flash {
+  from {
+    background-color: rgb(217 242 107 / 0.55);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+.animate-rise {
+  animation: rise-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin 0.8s linear infinite;
+}
+.animate-flash {
+  animation: flash 1.6s ease-out both;
+}
+.bar-fill {
+  transform-origin: left center;
+  transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-pulse-dot,
+  .animate-spin-slow,
+  .animate-flash {
+    animation: none;
+  }
+  .bar-fill,
+  .skip-link {
+    transition: none;
+  }
+}
+
+/* Thin, quiet scrollbars inside panes. */
+.pane-scroll {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* The ruled "ledger" texture used on Check panels. */
+.ruled {
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, var(--check-line) 27px, var(--check-line) 28px);
+}

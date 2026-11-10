@@ -1,0 +1,5 @@
+[
+  { "id": "ASUC-ALC", "title": "No alcohol", "quote": "ASUC funds shall not be used to purchase alcoholic beverages, or to reimburse the purchase of alcoholic beverages, under any circumstances.", "source": "ASUC Finance Policy (mock) §4.2" },
+  { "id": "ASUC-REQ", "title": "Required fields", "quote": "Every request for funds must state the amount, the business purpose, and the budget line to be charged.", "source": "ASUC Finance Policy (mock) §3.1" },
+  { "id": "ASUC-BAN", "title": "Banned categories", "quote": "ASUC funds may not be used for gift cards, cash or cash equivalents, donations to individuals, or items for personal use.", "source": "ASUC Finance Policy (mock) §4.5" }
+]

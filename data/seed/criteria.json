@@ -1,0 +1,10 @@
+[
+  {"id": "C-01", "text": "Prefer Berkeley-local vendors when prices are within about 10%.", "lineId": null, "purposeTag": null, "paramCents": null, "paramKind": null, "source": "Exec minutes 2026-08-30", "lastConfirmedAt": "2026-08-30"},
+  {"id": "C-02", "text": "Order GM food against RSVPs, not hoped-for walk-ins; walk-ins are covered by leftovers.", "lineId": "L-FOOD", "purposeTag": "gm_food", "paramCents": null, "paramKind": null, "source": "Treasurer note on P-09", "lastConfirmedAt": "2026-04-09"},
+  {"id": "C-03", "text": "Target about $3.00 per RSVP for GM food.", "lineId": "L-FOOD", "purposeTag": "gm_food", "paramCents": 300, "paramKind": "per_head_target", "source": "Exec minutes 2026-08-30", "lastConfirmedAt": "2026-09-02"},
+  {"id": "C-04", "text": "Keep at least $200 of Food & Events in reserve for the end-of-semester social until December.", "lineId": "L-FOOD", "purposeTag": null, "paramCents": 20000, "paramKind": "reserve_floor", "source": "Semester plan (budget sheet, Plan tab)", "lastConfirmedAt": "2026-08-30"},
+  {"id": "C-05", "text": "Buy EEG consumables (electrodes, paste, leads) per project, sized to one build cycle; don't stockpile.", "lineId": "L-HW", "purposeTag": "hardware_eeg", "paramCents": null, "paramKind": null, "source": "Exec minutes 2026-09-13", "lastConfirmedAt": "2026-09-13"},
+  {"id": "C-06", "text": "Hardware purchases over $200 need a named project lead and a demo date.", "lineId": "L-HW", "purposeTag": null, "paramCents": 20000, "paramKind": "threshold", "source": "Bylaws Art. VI §3", "lastConfirmedAt": "2026-08-30"},
+  {"id": "C-07", "text": "Print once per tabling cycle; reuse banners and tablecloths.", "lineId": "L-MKT", "purposeTag": null, "paramCents": null, "paramKind": null, "source": "Exec minutes 2026-09-13", "lastConfirmedAt": "2026-09-13"},
+  {"id": "C-08", "text": "File reimbursements within 14 days of purchase.", "lineId": null, "purposeTag": null, "paramCents": null, "paramKind": null, "source": "ASUC deadline + treasurer preference", "lastConfirmedAt": "2026-08-30"}
+]

@@ -1,0 +1,52 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "advisor",
+  "fixtureKey": "i-already-paid-86-40-for-eeg-electrode-supplies-for-the-headset-project-can-i-ge-f5b054.kb-c67a4a7a",
+  "schemaVersion": 1,
+  "latencyMs": 3120,
+  "scenario": "Electrode reimbursement: support.",
+  "output": {
+    "verdict": "support",
+    "headline": "Routine consumables for the headset build, in line with past approvals.",
+    "reasons": [
+      {
+        "text": "Electrode supplies for the headset match P-18, which the treasurer approved as consumables for the same build.",
+        "cites": [
+          {
+            "type": "past_spending",
+            "id": "P-18"
+          }
+        ]
+      },
+      {
+        "text": "C-05 asks for consumables sized to one build cycle; one set of electrodes, paste and leads fits that.",
+        "cites": [
+          {
+            "type": "rule",
+            "id": "C-05"
+          }
+        ]
+      },
+      {
+        "text": "It is under the [[S-threshold-C-06]] mark in C-06, so no extra project-lead sign-off is needed, and Project Hardware keeps [[S-line-remaining-after]].",
+        "cites": [
+          {
+            "type": "rule",
+            "id": "C-06"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-threshold-C-06"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-line-remaining-after"
+          }
+        ]
+      }
+    ],
+    "suggested_amount_stat": null
+  }
+}

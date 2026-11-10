@@ -1,0 +1,426 @@
+/* Mock ASUC Portal - Deliberately old-fashioned styling */
+
+.pageWrapper {
+  --navy: #1f3a68;
+  --light-grey: #f5f5f5;
+  --border-grey: #d0d0d0;
+  --text-grey: #666;
+  --error-red: #c41c3b;
+  --success-green: #2d7f2e;
+
+  min-height: 100vh;
+  background-color: #fff;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.pageWrapper * {
+  box-sizing: border-box;
+}
+
+.mockBanner {
+  background-color: #ffd700;
+  border-bottom: 2px solid #ffb300;
+  padding: 12px 16px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.headerBar {
+  background-color: var(--navy);
+  color: white;
+  padding: 16px 24px;
+  border-bottom: 1px solid #000;
+}
+
+.headerText {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.breadcrumb {
+  color: #999;
+  font-size: 13px;
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--border-grey);
+  background-color: var(--light-grey);
+}
+
+.container {
+  display: flex;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.sidebar {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.sidebarNav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-grey);
+  background-color: var(--light-grey);
+}
+
+.sidebarNavItem {
+  border-bottom: 1px solid var(--border-grey);
+  margin: 0;
+}
+
+.sidebarNavItem:last-child {
+  border-bottom: none;
+}
+
+.sidebarNavItem a {
+  display: block;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: var(--navy);
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.sidebarNavItem a:hover {
+  border-left-color: var(--navy);
+  background-color: #ebebeb;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.formContainer {
+  background-color: white;
+  border: 1px solid var(--border-grey);
+  padding: 0;
+}
+
+.section {
+  border-bottom: 1px solid var(--border-grey);
+  padding: 0;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionLegend {
+  background-color: var(--light-grey);
+  border-bottom: 1px solid var(--border-grey);
+  padding: 12px 20px;
+  margin: 0;
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
+}
+
+.sectionContent {
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.fieldGroup {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: normal;
+  color: #333;
+  padding-top: 6px;
+  word-wrap: break-word;
+}
+
+.required {
+  color: var(--error-red);
+  font-weight: bold;
+  margin-left: 0;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.control input[type='text'],
+.control input[type='email'],
+.control input[type='number'],
+.control input[type='file'],
+.control textarea,
+.control select {
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  padding: 8px 8px;
+  border: 1px solid var(--border-grey);
+  background-color: #fff;
+  color: #333;
+  min-height: 32px;
+}
+
+.control select {
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23333' d='M0 0l6 8 6-8H0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+.control textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: Arial, sans-serif;
+}
+
+.control input[type='text']:focus,
+.control input[type='email']:focus,
+.control input[type='number']:focus,
+.control input[type='file']:focus,
+.control textarea:focus,
+.control select:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: -1px;
+}
+
+.help {
+  font-size: 12px;
+  color: var(--text-grey);
+  margin: 0;
+  display: block;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 6px;
+}
+
+.checkboxGroup input[type='checkbox'] {
+  margin-top: 2px;
+  cursor: pointer;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.checkboxGroup input[type='checkbox']:focus {
+  outline: 2px solid var(--navy);
+}
+
+.checkboxLabel {
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.error {
+  color: var(--error-red);
+  font-size: 13px;
+  display: block;
+  margin-top: 2px;
+}
+
+.errorSummary {
+  background-color: #ffe6e6;
+  border: 2px solid var(--error-red);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.errorSummaryTitle {
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  color: var(--error-red);
+}
+
+.errorSummaryList {
+  list-style-position: inside;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.errorSummaryList li {
+  margin: 4px 0;
+  color: var(--error-red);
+}
+
+.buttons {
+  padding: 20px;
+  border-top: 1px solid var(--border-grey);
+  background-color: var(--light-grey);
+  display: flex;
+  gap: 12px;
+}
+
+.submitButton,
+.draftButton,
+.buttonLink {
+  padding: 10px 20px;
+  font-size: 15px;
+  border: 1px solid var(--border-grey);
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+}
+
+.draftButton:hover {
+  background-color: #f0f0f0;
+}
+
+.submitButton:focus,
+.draftButton:focus,
+.buttonLink:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: -1px;
+}
+
+.submitButton {
+  background-color: var(--navy);
+  color: white;
+  border-color: var(--navy);
+  font-weight: bold;
+  min-width: 160px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #152b52;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.draftButton {
+  background-color: #e8e8e8;
+  font-weight: normal;
+}
+
+.draftStatus {
+  color: var(--success-green);
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 8px;
+  display: none;
+}
+
+.draftStatus.show {
+  display: block;
+}
+
+.confirmationPanel {
+  padding: 24px;
+  background-color: #f0f8f0;
+  border: 2px solid var(--success-green);
+}
+
+.confirmationHeading {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--success-green);
+  margin: 0 0 16px 0;
+}
+
+.confirmationText {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+}
+
+.confirmationId {
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  color: var(--navy);
+}
+
+.confirmationLink {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--navy);
+  text-decoration: underline;
+}
+
+.confirmationLink:hover {
+  color: #152b52;
+}
+
+.confirmationLink:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .fieldGroup {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .label {
+    padding-top: 0;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .submitButton,
+  .draftButton,
+  .buttonLink {
+    width: 100%;
+    justify-content: center;
+  }
+}

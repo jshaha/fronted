@@ -1,0 +1,81 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "advisor",
+  "fixtureKey": "can-i-spend-50-on-pizza-for-thursdays-gm.kb-717bd3aa",
+  "schemaVersion": 1,
+  "latencyMs": 3120,
+  "scenario": "$50 GM pizza: caution from precedent, suggest $36.",
+  "output": {
+    "verdict": "caution",
+    "headline": "At [[S-per-head]] a head this runs well above recent GMs; [[S-suggested]] would match the usual rate.",
+    "reasons": [
+      {
+        "text": "At [[S-per-head]] per RSVP for [[S-attendees]] RSVPs, this is above the last [[S-recent-count]] GMs, which averaged [[S-recent-avg-per-head]] a head (P-14, P-19).",
+        "cites": [
+          {
+            "type": "budget_stat",
+            "id": "S-per-head"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-recent-avg-per-head"
+          },
+          {
+            "type": "past_spending",
+            "id": "P-14"
+          },
+          {
+            "type": "past_spending",
+            "id": "P-19"
+          }
+        ]
+      },
+      {
+        "text": "C-03 targets about [[S-target-per-head]] per RSVP for GM food; at that rate this order would be [[S-suggested]].",
+        "cites": [
+          {
+            "type": "rule",
+            "id": "C-03"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-suggested"
+          }
+        ]
+      },
+      {
+        "text": "C-02 says to order against RSVPs, not hoped-for walk-ins, and P-09 was denied for over-ordering a regular GM.",
+        "cites": [
+          {
+            "type": "rule",
+            "id": "C-02"
+          },
+          {
+            "type": "past_spending",
+            "id": "P-09"
+          }
+        ]
+      },
+      {
+        "text": "[[S-events-left]] GMs are still on the calendar; approving leaves [[S-above-reserve-after]] above the C-04 reserve to cover them.",
+        "cites": [
+          {
+            "type": "budget_stat",
+            "id": "S-events-left"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-above-reserve-after"
+          },
+          {
+            "type": "rule",
+            "id": "C-04"
+          }
+        ]
+      }
+    ],
+    "suggested_amount_stat": "S-suggested"
+  }
+}

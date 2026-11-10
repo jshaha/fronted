@@ -1,0 +1,137 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "planner",
+  "fixtureKey": "v1.personal.be62c136",
+  "schemaVersion": 1,
+  "latencyMs": 2780,
+  "scenario": "Blank form, reimbursement payload: fill everything visible and submit.",
+  "output": {
+    "steps": [
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Organization Name"
+        },
+        "value_ref": "org_name"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "ASUC Account Number"
+        },
+        "value_ref": "org_account"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Submitted By (Full Name)"
+        },
+        "value_ref": "submitter_name"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Submitter Email"
+        },
+        "value_ref": "submitter_email"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "External Reference"
+        },
+        "value_ref": "external_ref",
+        "why": "unique reference so the portal can reject duplicates"
+      },
+      {
+        "action": "select",
+        "target": {
+          "role": "combobox",
+          "name": "Payment Method"
+        },
+        "value_ref": "payment_method"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Vendor / Merchant"
+        },
+        "value_ref": "vendor"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Transaction Date"
+        },
+        "value_ref": "transaction_date",
+        "why": "no format shown; using the ISO date"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Amount (USD)"
+        },
+        "value_ref": "amount"
+      },
+      {
+        "action": "select",
+        "target": {
+          "role": "combobox",
+          "name": "Budget Line"
+        },
+        "value_ref": "budget_line"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Attendees / Participants"
+        },
+        "value_ref": "attendees_description"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Business Purpose"
+        },
+        "value_ref": "business_purpose"
+      },
+      {
+        "action": "upload",
+        "target": {
+          "role": "file",
+          "name": "Itemized Receipt"
+        },
+        "value_ref": "receipt_file"
+      },
+      {
+        "action": "check",
+        "target": {
+          "role": "checkbox",
+          "name": "I certify that this expense complies with the ASUC Finance Policy"
+        }
+      },
+      {
+        "action": "click",
+        "target": {
+          "role": "button",
+          "name": "Submit Expense Report"
+        },
+        "why": "submit"
+      }
+    ],
+    "submits": true,
+    "notes": "Personal funds may reveal payee fields; will handle on the next snapshot."
+  }
+}

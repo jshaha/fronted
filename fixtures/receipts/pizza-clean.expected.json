@@ -1,0 +1,27 @@
+{
+  "fixture": "pizza-clean",
+  "merchant_name": "Telegraph Slice Co.",
+  "receipt_date": "2026-11-12",
+  "line_items": [
+    {
+      "description": "Large Cheese Pizza",
+      "quantity": 2,
+      "unit_price_cents": 1750,
+      "amount_cents": 3500,
+      "category": "food"
+    },
+    {
+      "description": "Garlic Knots (12)",
+      "quantity": 1,
+      "unit_price_cents": 600,
+      "amount_cents": 600,
+      "category": "food"
+    }
+  ],
+  "subtotal_cents": 4100,
+  "tax_cents": 420,
+  "tip_cents": 353,
+  "total_cents": 4873,
+  "payment_last4": "4821",
+  "contains_alcohol": false
+}

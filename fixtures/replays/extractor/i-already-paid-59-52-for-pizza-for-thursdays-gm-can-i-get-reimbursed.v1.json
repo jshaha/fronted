@@ -1,0 +1,28 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "extractor",
+  "fixtureKey": "i-already-paid-59-52-for-pizza-for-thursdays-gm-can-i-get-reimbursed",
+  "schemaVersion": 1,
+  "latencyMs": 1180,
+  "scenario": "Reimbursement whose receipt includes beer → cancelled.",
+  "output": {
+    "intent": "reimbursement",
+    "amount_text": "$59.52",
+    "purpose": "pizza",
+    "purpose_tag": "gm_food",
+    "budget_line": "Food & Events",
+    "event_phrase": "Thursday's GM",
+    "event_type": "gm",
+    "attendee_count": null,
+    "items": [
+      "pizza"
+    ],
+    "vendor_hint": null,
+    "project_name": null,
+    "missing": [
+      "attendee_count"
+    ]
+  }
+}

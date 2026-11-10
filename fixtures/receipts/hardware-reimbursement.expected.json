@@ -1,0 +1,34 @@
+{
+  "fixture": "hardware-reimbursement",
+  "merchant_name": "Ohm & Co. Electronics",
+  "receipt_date": "2026-11-06",
+  "line_items": [
+    {
+      "description": "Gold Cup EEG Electrodes (10 pk)",
+      "quantity": 2,
+      "unit_price_cents": 2495,
+      "amount_cents": 4990,
+      "category": "hardware"
+    },
+    {
+      "description": "Ten20 Conductive Paste (3 × 4oz)",
+      "quantity": 1,
+      "unit_price_cents": 1850,
+      "amount_cents": 1850,
+      "category": "hardware"
+    },
+    {
+      "description": "Shielded Snap Lead Wires (5 pk)",
+      "quantity": 1,
+      "unit_price_cents": 997,
+      "amount_cents": 997,
+      "category": "hardware"
+    }
+  ],
+  "subtotal_cents": 7837,
+  "tax_cents": 803,
+  "tip_cents": null,
+  "total_cents": 8640,
+  "payment_last4": "7733",
+  "contains_alcohol": false
+}

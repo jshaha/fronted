@@ -1,0 +1,34 @@
+{
+  "fixture": "pizza-beer",
+  "merchant_name": "Telegraph Slice Co.",
+  "receipt_date": "2026-11-12",
+  "line_items": [
+    {
+      "description": "Large Cheese Pizza",
+      "quantity": 2,
+      "unit_price_cents": 1750,
+      "amount_cents": 3500,
+      "category": "food"
+    },
+    {
+      "description": "Garlic Knots (12)",
+      "quantity": 1,
+      "unit_price_cents": 600,
+      "amount_cents": 600,
+      "category": "food"
+    },
+    {
+      "description": "Lagunitas IPA 6-Pack",
+      "quantity": 1,
+      "unit_price_cents": 1299,
+      "amount_cents": 1299,
+      "category": "alcohol"
+    }
+  ],
+  "subtotal_cents": 5399,
+  "tax_cents": 553,
+  "tip_cents": null,
+  "total_cents": 5952,
+  "payment_last4": "4821",
+  "contains_alcohol": true
+}

@@ -1,0 +1,4 @@
+line_id,name,allocated,per_head_cap,max_per_purchase,required_fields,allowed_categories,notes
+L-FOOD,Food & Events,1200.00,8.00,400.00,event;attendee_count,restaurants;fast_food;grocery;caterers,"GMs, socials, workshops, hackathon dinner"
+L-HW,Project Hardware,2500.00,,600.00,project_name,electronics;hardware_stores;online_marketplaces,"Headset build, decoder demo, shared tools"
+L-MKT,Marketing,300.00,,150.00,,print_shops;online_marketplaces,"Flyers, stickers, posters"

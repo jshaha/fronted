@@ -1,0 +1,42 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "receipt",
+  "fixtureKey": "dbdf671ad5dfe302",
+  "schemaVersion": 1,
+  "latencyMs": 2350,
+  "scenario": "pizza-beer.png: Pizza + a six-pack: alcohol cancels the whole request.",
+  "output": {
+    "merchant_name": "Telegraph Slice Co.",
+    "merchant_address": "2511 Telegraph Ave, Berkeley, CA 94704",
+    "receipt_date": "2026-11-12",
+    "line_items": [
+      {
+        "description": "Large Cheese Pizza",
+        "quantity": 2,
+        "amount_text": "35.00",
+        "category": "food"
+      },
+      {
+        "description": "Garlic Knots (12)",
+        "quantity": 1,
+        "amount_text": "6.00",
+        "category": "food"
+      },
+      {
+        "description": "Lagunitas IPA 6-Pack",
+        "quantity": 1,
+        "amount_text": "12.99",
+        "category": "alcohol"
+      }
+    ],
+    "subtotal_text": "53.99",
+    "tax_text": "5.53",
+    "tip_text": null,
+    "total_text": "59.52",
+    "payment_last4": "4821",
+    "is_itemized": true,
+    "legibility": "clear"
+  }
+}

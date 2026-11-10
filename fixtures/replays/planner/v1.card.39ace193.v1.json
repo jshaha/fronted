@@ -1,0 +1,41 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "planner",
+  "fixtureKey": "v1.card.39ace193",
+  "schemaVersion": 1,
+  "latencyMs": 2780,
+  "scenario": "Portal rejected round 1: card last 4 now visible and required; date must be MM/DD/YYYY. Fix only those.",
+  "output": {
+    "steps": [
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Card Last 4 Digits"
+        },
+        "value_ref": "card_last4",
+        "why": "appeared after choosing the program card"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Transaction Date"
+        },
+        "value_ref": "transaction_date_us",
+        "why": "portal wants MM/DD/YYYY"
+      },
+      {
+        "action": "click",
+        "target": {
+          "role": "button",
+          "name": "Submit Expense Report"
+        },
+        "why": "resubmit"
+      }
+    ],
+    "submits": true
+  }
+}

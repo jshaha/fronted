@@ -1,0 +1,7 @@
+[
+  { "id": "E-GM6", "name": "Fall GM #6: Recruiting GM", "type": "gm", "weekday": "thursday", "weekOffset": 0, "dayShift": 0, "rsvpCount": 12, "isRecruiting": true },
+  { "id": "E-TAB", "name": "Calapalooza winter tabling", "type": "tabling", "weekday": "thursday", "weekOffset": 0, "dayShift": 2, "rsvpCount": 0, "isRecruiting": true },
+  { "id": "E-GM7", "name": "Fall GM #7: Recruiting GM (lab tours)", "type": "gm", "weekday": "thursday", "weekOffset": 1, "dayShift": 0, "rsvpCount": 14, "isRecruiting": true },
+  { "id": "E-GM8", "name": "Fall GM #8: Final GM", "type": "gm", "weekday": "thursday", "weekOffset": 3, "dayShift": 0, "rsvpCount": 18, "isRecruiting": false },
+  { "id": "E-SOC", "name": "End-of-semester social", "type": "social", "weekday": "thursday", "weekOffset": 4, "dayShift": 1, "rsvpCount": 40, "isRecruiting": false }
+]

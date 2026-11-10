@@ -1,0 +1,15 @@
+node_modules
+.next
+data/*.sqlite*
+data/screenshots
+data/uploads
+fixtures/replays/_missing
+test-results
+playwright-report
+.env
+*.tsbuildinfo
+next-env.d.ts
+
+# iCloud conflict copies
+* 2.*
+* 2

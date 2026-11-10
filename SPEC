@@ -1,0 +1,178 @@
+# Fronted: spec (v2)
+
+> Fronted — *…so nobody has to front it.*
+> Source of truth for product decisions: `concepts_brief.md`. The original spec is preserved in `SPEC.original.md` and is superseded wherever it conflicts (no Twilio, no Stripe, no single MOCK_MODE, no CSV export, no nudge emails, no receipt eval).
+
+## 1. Stated assumption
+
+ASUC (UC Berkeley student government) holds every student org's money. **Assumption, said out loud:** ASUC funds a Ramp-style virtual card program per org. The ASUC portal stays the university's official record and **has no API**. The portal is to ASUC what an ERP is to a company; card platforms sync to ERPs through APIs, this record has none, so **the agent is the sync**. A second assumption: ASUC requires an expense report per purchase (business purpose, attendees, itemized receipt).
+
+The reimbursement branch (`funding_source=out_of_pocket`) needs no assumption: it works the way ASUC works today. *"Works today as reimbursements; if ASUC funds cards, nobody fronts money."*
+
+Pitch line: *"Ramp enforces the policy you wrote down. Fronted applies the policy your treasurer actually uses, then files it where the university requires."*
+
+## 2. Pipeline and modules
+
+```
+officer message ──► Extractor (Claude) ──► echo-back ──► RuleEngine Tier A (school) ──► Tier B (org sheet)
+                                                              │ fail → rejected / needs_info (Advisor never runs)
+                                                              ▼ pass
+                                         budget_stats (code) ──► Advisor (Claude, Tier C, cited advice only)
+                                                              ▼
+                                   treasurer approval card (Check panel | Advice panel) ── one approval
+                                                              ▼
+                     CardIssuer.createCard (mock) ── "Simulate purchase" ──► transaction.settled ──► handleIssuerEvent
+                                                              ▼
+                     receipt photo ──► Receipt vision (Claude) ──► code reconcile (alcohol / total / tolerance)
+                                                              ▼
+                     portal_filings job row ──► portal worker (separate node process, Playwright)
+                         snapshot (trimmed form controls) ──► Planner (Claude) ──► PlanValidator (code) ──► execute
+                                                              ▼
+                     confirmation ID ──► ledger `filed` ──► closed
+```
+
+| Module | File | Kind |
+| --- | --- | --- |
+| Claude wrapper (live/replay/record) | `src/lib/claude/client.ts` | infra |
+| Extractor | `src/lib/claude/extractor.ts` | Claude |
+| RuleEngine | `src/lib/rules/*.ts` | pure TS, stops at first failure |
+| Budget stats | `src/lib/advisor/budgetStats.ts` | pure TS |
+| Advisor + citation check | `src/lib/advisor/*.ts` | Claude + code |
+| State machine | `src/lib/state/machine.ts` — `transition(request, event) → {status, effects}` | pure TS |
+| Ledger | `src/lib/ledger.ts` | pure TS + DB |
+| CardIssuer | `src/lib/card/*.ts` | interface + mock |
+| Receipt reader | `src/lib/claude/receipt.ts`, `src/lib/receipts/reconcile.ts` | Claude + code |
+| PortalFiler | `src/lib/portal/*.ts` (payload, snapshot, planner, validator, fallback plan, allowlist, executor) | Claude + code |
+| Orchestrator | `src/lib/pipeline/*.ts` — the only place that runs effects | impure |
+| Portal worker | `worker/portal-worker.ts` | separate process |
+
+## 3. Org knowledge model
+
+Three citable sources, all in SQLite after a one-time import of `data/seed/*` (validated with zod). SQLite is the authority after import.
+
+1. **Budget sheet** (`data/seed/budget.csv` → `budget_lines`, each with `source_row`, the sheet row number). Columns: allocated, per-head cap, max per purchase, required fields, allowed card categories. Cited as `sheet row N`.
+2. **Written criteria** (`org_criteria`, IDs `C-01…`), each with `source` (bylaws, exec minutes, treasurer note) and `last_confirmed_at`. Some carry a numeric `param_cents` (e.g. C-03 GM food target $3.00/RSVP) that code uses to compute suggestions.
+3. **Precedent** (`precedents`, IDs `P-01…`): past spending and treasurer decisions with notes, purpose tags, attendee counts.
+
+Plus **events** (RSVP counts) and **school rules** (`school_rules`, quoted verbatim, IDs `ASUC-…`).
+
+**Learning loop:** every treasurer approve/deny writes a new precedent row (`P-31`, …) carrying the treasurer's note; optionally ("Save as standing criterion") also a criterion row. The next Advisor call for the same line + purpose tag sees it and cites it.
+
+Precedent query (no RAG): same budget line AND same purpose tag, newest first, last 12 rows.
+
+## 4. Code vs Claude split — "Claude reads, code decides"
+
+| Claude does | Code does |
+| --- | --- |
+| Extract fields from the officer message (`amount_text` verbatim, purpose, line, event phrase, attendees) | Verify `amount_text` appears verbatim in the message; parse it into cents; resolve the event and RSVPs; echo back |
+| Read the receipt image into line items with category tags (amounts as text) | Parse amounts to cents; check line-sum math; alcohol (keyword list OR category tag); reconcile to the charge within $0.50 |
+| Word advice (`support/caution/against/unavailable`) with citations | Compute every number as a `budget_stat` (`S-…`); substitute `[[S-…]]` placeholders; drop any reason with a nonexistent citation ID, no citation, unknown placeholder, or a raw `$` amount |
+| Plan the portal fill: which control gets which payload field | Validate plan (no free values, no navigation, targets resolve to exactly one control), execute, enforce URL allowlist, idempotency |
+| — | Every state transition, every block, all arithmetic, every ledger write |
+
+All model outputs are validated with zod. On failure: retry once with the validation error; then the request moves to `needs_info` (extractor/receipt) or advice becomes `unavailable` ("no recommendation") or the filer uses the scripted fallback plan (planner). Never default to pass.
+
+Two fixed words in the UI: a **Check** comes from code, can block, cites a rule. **Advice** comes from Claude, never blocks, cites sources. Shown in two visually distinct panels.
+
+### Tiers
+
+| Tier | Rules | Effect |
+| --- | --- | --- |
+| A — school (`school_rules`) | `ASUC-ALC` no alcohol; `ASUC-REQ` amount + purpose + line present; `ASUC-BAN` banned categories (gift cards, cash equivalents, donations, personal items) | reject / needs_info |
+| B — org sheet (`org_hard_rules`, derived from the sheet) | `H-REM` remaining ≥ amount; `H-CAP` per-attendee cap; `H-MAX` max per purchase; `H-REQ` required fields per line | reject (with suggested fix) / needs_info |
+| C — Advisor | soft criteria + precedent | advice only |
+
+## 5. State machine
+
+`transition(request, event) → {status, effects[]}` is pure; invalid transitions throw. Claude never emits events.
+
+States: `draft, needs_info, rejected, awaiting_approval, denied, expired, approved, card_issued, purchased, receipt_received, receipt_flagged, filing_queued, filed, filing_failed, needs_human, closed, cancelled`.
+
+Card path (`funding_source=program_card`):
+```
+draft ─RULES_FAILED→ rejected            draft ─RULES_NEEDS_INFO→ needs_info
+draft ─RULES_PASSED→ awaiting_approval ─DENY→ denied
+awaiting_approval ─EXPIRE→ expired (24h)
+awaiting_approval ─APPROVE→ approved [commit, record_precedent, issue_card]
+approved ─CARD_ISSUED→ card_issued
+card_issued ─EXPIRE→ expired [terminate_card, release_commit]  (app-enforced card expiry)
+card_issued ─TXN_SETTLED→ purchased [release_commit, record_settled, terminate_card (single use), ask_receipt]
+purchased ─RECEIPT_OK→ receipt_received ─QUEUE_FILING→ filing_queued [queue_filing]
+purchased ─RECEIPT_FLAGGED→ receipt_flagged ─RESOLVE_ACCEPT→ filing_queued | ─RESOLVE_CANCEL→ cancelled
+purchased ─RECEIPT_ALCOHOL→ cancelled [mark_owed_back]   (card already terminated; charge stays unreconciled)
+filing_queued ─FILED→ filed [record_filed] ─CLOSE→ closed
+filing_queued ─FILING_FAILED→ filing_failed ─ESCALATE→ needs_human ─RETRY_FILING→ filing_queued
+```
+Reimbursement path (`funding_source=out_of_pocket`) enters at `receipt_received`:
+```
+receipt_received ─RECEIPT_ALCOHOL→ cancelled
+receipt_received ─RULES_FAILED→ rejected | ─RULES_NEEDS_INFO→ needs_info | ─RULES_PASSED→ awaiting_approval
+awaiting_approval ─APPROVE→ filing_queued [record_precedent, queue_filing]
+```
+The treasurer acts again only on `receipt_flagged`, `needs_human`, or an unreconciled card charge (alcohol cancel). Alcohol never drops lines: the whole request is cancelled.
+
+## 6. Data model (SQLite, integer cents everywhere)
+
+- `orgs`, `members` (role `officer|treasurer`, email, student_id; no phone numbers)
+- `budget_lines` (`id`, `name`, `allocated_cents`, `per_head_cap_cents`, `max_per_purchase_cents`, `required_fields`, `allowed_categories`, `source_row`)
+- `ledger_entries` (`kind`: `commit|release|card_settled|filed|adjust`, `amount_cents` signed only for adjust, `funding_source`, `line_id`, `request_id`, memo)
+  - committed = Σcommit − Σrelease
+  - spent = Σcard_settled + Σfiled(out_of_pocket) + Σadjust
+  - unreconciled = Σcard_settled − Σfiled(program_card) + Σadjust(program_card)
+  - remaining = allocated − spent − committed
+- `school_rules`, `org_hard_rules`, `org_criteria` (`source`, `last_confirmed_at`, `param_cents`), `precedents` (outcome, treasurer note, purpose tag, attendees, semester), `events` (RSVPs)
+- `requests` (`short_id` `R-12`, status, funding_source, amount_cents, approved_amount_cents, line_id, event_id, attendee_count, purpose, purpose_tag, extraction_json), `rule_results`, `recommendations` (verdict, reasons_json, dropped_json), `approvals`
+- `cards` (`issuer`, `external_card_id`, `last4`, `limit_cents`, `allowed_categories`, `expires_at`, `status`), `card_transactions` (unique `external_transaction_id`)
+- `receipts` (unique `sha256`, extraction_json, parsed totals, flags), `portal_filings` (`form_type`, unique `idempotency_key`, `payload_json`, `plan_json`, `confirmation_id`, `status`, attempts)
+- `audit_log` (request_id, trace_id, kind, site, model, latency_ms, mode, data_json, screenshot)
+- `chat_messages` (simulator transcript)
+- `mock_issuer_cards`, `mock_portal_submissions` — state owned by the mock external systems.
+
+## 7. Interfaces and switches
+
+```ts
+interface CardIssuer {
+  readonly name: 'mock';
+  createCard(i: CreateCardInput): Promise<IssuedCard>;
+  getCard(externalCardId: string): Promise<IssuedCard>;
+  terminateCard(externalCardId: string): Promise<IssuedCard>;
+}
+type TransactionSettledEvent = { type: 'transaction.settled'; event_id; external_card_id; external_transaction_id; amount_cents; merchant_name; merchant_category; settled_at };
+```
+"Simulate purchase" asks the mock issuer to authorize; on success it emits a normalized `transaction.settled` event into `handleIssuerEvent` — the same handler `POST /api/issuer/events` uses. The field names are ours, *modeled on a typical card-issuing API*; never claimed Ramp-compatible.
+
+Claude wrapper: `callClaude({site, fixtureKey, schemaVersion, schema, system, content})`. Replay recordings live at `fixtures/replays/<site>/<fixtureKey>.v<schemaVersion>.json` — keyed by site + fixtureKey + schemaVersion, **not** a prompt hash. Missing recording in replay = hard error (and a stub with the input is written to `fixtures/replays/_missing/` for authoring). Fixture keys: extractor = normalized message slug; receipt = image sha256 prefix; advisor = request slug + hash of the knowledge rows it sees (IDs + notes); planner = hash of the snapshot structure (roles/names/errors, not values) + payload shape.
+
+Switches (env): `CLAUDE_MODE=live|replay` (default replay), `PORTAL_RUNNER=headed|headless`, `ISSUER=mock`, `CLAUDE_MODEL_*` model overrides (default `claude-sonnet-5-5`), `CARD_BUFFER_PCT=20`, `RECEIPT_TOLERANCE_CENTS=50`, `PORTAL_ALLOWED_ORIGINS`.
+
+Plan step (strict zod object, no extra keys):
+```ts
+{ action: 'fill'|'select'|'check'|'upload'|'click', target: { role, name }, value_ref?: keyof FilingPayload }
+```
+fill/select/upload require `value_ref`; check/click forbid it. Roles allowed: textbox, combobox, checkbox, button, file. Links and any navigation are impossible by construction. Each target must match exactly one control in the snapshot and exactly one element at execution.
+
+Idempotency in three places: unique `portal_filings.idempotency_key` (`FRONTED-R-12`), the mock portal rejects a duplicate `external_ref` server-side, the worker skips any job that already has a `confirmation_id`.
+
+## 8. Demo script (3 minutes, replay mode)
+
+1. **Reject with a fix (org rule, not alcohol):** officer: "Can I spend $120 on stickers for Calapalooza tabling?" → Tier B `H-REM`: Marketing has $85.50 left (sheet row 4). Suggested fix shown.
+2. **Pass but flagged from precedent:** "Can I spend $50 on pizza for Thursday's GM?" → echo-back → all checks pass → Advice *caution*: $4.17/head for 12 RSVPs vs last 5 GMs' $2.90 (P-14, P-19), C-03 suggests $36.
+3. **Treasurer approves once, with a note** ("Thursday is our recruiting GM…") → note becomes P-31.
+4. **Card:** last 4, limit $60.00 (+20% buffer), food categories, expiry 2 days after the event.
+5. **Simulate purchase** $48.73 → normalized event → receipt photo → Claude reads it, code reconciles (within $0.50).
+6. **Browser agent** files the expense report in the mock ASUC portal, hits the date-format validation error, fixes it, gets a confirmation ID. Budget panel updates.
+7. **Learning loop:** "Can I spend $60 on pizza for next Thursday's recruiting GM?" → advice now *supports*, citing P-31.
+8. (Optional) Reimbursement: hardware receipt already paid → same pipeline, personal-funds payee section in the portal. (Optional) Beer receipt → whole request cancelled, card terminated, $59.52 shown unreconciled.
+
+## 9. In scope (48h)
+
+Simulator (officer pane, treasurer pane, side panel: budget, unreconciled, live agent trace), mock ASUC portal (one form, payment method, payee only for personal funds, deliberate date-format error, duplicate rejection, confirmation ID), portal worker, mock issuer, the three tiers, the learning loop, reimbursement flag, replay recordings for every demo call, `npm run demo|reset|record|test|e2e|typecheck`.
+
+## 10. Deferred
+
+Live Google Sheets sync and the live sheet-cell-edit beat (stretch), second portal layout `?v=2` (stretch), real card issuer adapter, SMS, Stripe, Ramp API, multiple orgs, RAG, CSV export, nudge emails, receipt eval, HEIC (JPEG/PNG only), auth beyond the simulator's actor switch.
+
+## 11. Tests
+
+Vitest: ledger budget math; treasurer-only approval (server-side); Tier A/B cases; hard failure never calls the Advisor; nonexistent citation dropped; filing idempotency; portal URL allowlist; `transition()` table; plan validator rejects free values / navigation / ambiguous targets; alcohol cancels on both paths.
+Playwright (replay mode): happy path end to end; beer cancellation; reimbursement branch; learning loop (the treasurer note changes the next advice).

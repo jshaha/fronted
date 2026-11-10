@@ -1,0 +1,36 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "receipt",
+  "fixtureKey": "cdb836c7d7147547",
+  "schemaVersion": 1,
+  "latencyMs": 2350,
+  "scenario": "pizza-clean.png: Clean pizza receipt; matches the $48.73 card charge.",
+  "output": {
+    "merchant_name": "Telegraph Slice Co.",
+    "merchant_address": "2511 Telegraph Ave, Berkeley, CA 94704",
+    "receipt_date": "2026-11-12",
+    "line_items": [
+      {
+        "description": "Large Cheese Pizza",
+        "quantity": 2,
+        "amount_text": "35.00",
+        "category": "food"
+      },
+      {
+        "description": "Garlic Knots (12)",
+        "quantity": 1,
+        "amount_text": "6.00",
+        "category": "food"
+      }
+    ],
+    "subtotal_text": "41.00",
+    "tax_text": "4.20",
+    "tip_text": "3.53",
+    "total_text": "48.73",
+    "payment_last4": "4821",
+    "is_itemized": true,
+    "legibility": "clear"
+  }
+}

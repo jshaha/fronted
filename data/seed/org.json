@@ -1,0 +1,8 @@
+{
+  "org": { "id": "org-neurotech", "name": "Neurotech@Berkeley", "asucAccount": "ASUC-ORG-4471", "semester": "FA26" },
+  "members": [
+    { "id": "m-maya", "name": "Maya Chen", "email": "maya.chen@berkeley.edu", "studentId": "3036123456", "role": "officer", "title": "Events Chair" },
+    { "id": "m-arjun", "name": "Arjun Patel", "email": "arjun.patel@berkeley.edu", "studentId": "3035987654", "role": "officer", "title": "Hardware Lead" },
+    { "id": "m-jordan", "name": "Jordan Lee", "email": "jordan.lee@berkeley.edu", "studentId": "3034567890", "role": "treasurer", "title": "Treasurer" }
+  ]
+}

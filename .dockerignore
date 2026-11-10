@@ -1,0 +1,11 @@
+node_modules
+.next
+data/*.sqlite*
+data/screenshots
+data/uploads
+test-results
+playwright-report
+.env
+*.tsbuildinfo
+*.sqlite
+* 2.*

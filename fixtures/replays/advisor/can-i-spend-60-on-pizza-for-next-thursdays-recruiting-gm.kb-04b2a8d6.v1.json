@@ -1,0 +1,64 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "advisor",
+  "fixtureKey": "can-i-spend-60-on-pizza-for-next-thursdays-recruiting-gm.kb-04b2a8d6",
+  "schemaVersion": 1,
+  "latencyMs": 3120,
+  "scenario": "Next GM after the P-31 note: support, cites P-31.",
+  "output": {
+    "verdict": "support",
+    "headline": "This fits the exception the treasurer set for recruiting GMs on P-31.",
+    "reasons": [
+      {
+        "text": "On P-31 the treasurer approved the last recruiting GM above the usual rate and set a higher per-head ceiling for recruiting GMs, since walk-ins beat RSVPs. At [[S-per-head]] per RSVP, this request sits under that ceiling.",
+        "cites": [
+          {
+            "type": "past_spending",
+            "id": "P-31"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-per-head"
+          }
+        ]
+      },
+      {
+        "text": "That note is newer than C-02 and C-03, so it reads as an exception for recruiting GMs rather than a change for regular ones.",
+        "cites": [
+          {
+            "type": "past_spending",
+            "id": "P-31"
+          },
+          {
+            "type": "rule",
+            "id": "C-02"
+          },
+          {
+            "type": "rule",
+            "id": "C-03"
+          }
+        ]
+      },
+      {
+        "text": "Approving still leaves [[S-above-reserve-after]] above the C-04 reserve, with [[S-events-left]] GMs on the calendar.",
+        "cites": [
+          {
+            "type": "budget_stat",
+            "id": "S-above-reserve-after"
+          },
+          {
+            "type": "rule",
+            "id": "C-04"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-events-left"
+          }
+        ]
+      }
+    ],
+    "suggested_amount_stat": null
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "planner",
+  "fixtureKey": "v1.personal.46b57263",
+  "schemaVersion": 1,
+  "latencyMs": 2780,
+  "scenario": "Portal rejected round 1: payee section now visible; date must be MM/DD/YYYY. Fix only those.",
+  "output": {
+    "steps": [
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Payee Full Name"
+        },
+        "value_ref": "payee_name"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Payee Email"
+        },
+        "value_ref": "payee_email"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Payee Student ID (SID)"
+        },
+        "value_ref": "payee_student_id"
+      },
+      {
+        "action": "fill",
+        "target": {
+          "role": "textbox",
+          "name": "Transaction Date"
+        },
+        "value_ref": "transaction_date_us",
+        "why": "portal wants MM/DD/YYYY"
+      },
+      {
+        "action": "click",
+        "target": {
+          "role": "button",
+          "name": "Submit Expense Report"
+        },
+        "why": "resubmit"
+      }
+    ],
+    "submits": true
+  }
+}

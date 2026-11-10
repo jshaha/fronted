@@ -1,0 +1,6 @@
+[
+  { "id": "H-REQ", "kind": "required_fields", "description": "A request must include every field its budget line requires.", "source": "Budget sheet, column required_fields" },
+  { "id": "H-REM", "kind": "remaining", "description": "A purchase may not exceed the line's remaining balance (allocated − spent − committed).", "source": "Budget sheet, column allocated + ledger" },
+  { "id": "H-MAX", "kind": "max_per_purchase", "description": "A single purchase may not exceed the line's max per purchase without an exec vote.", "source": "Budget sheet, column max_per_purchase" },
+  { "id": "H-CAP", "kind": "per_head_cap", "description": "Food may not exceed the line's per-attendee cap.", "source": "Budget sheet, column per_head_cap" }
+]

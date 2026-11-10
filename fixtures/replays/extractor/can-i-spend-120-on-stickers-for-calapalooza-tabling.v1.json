@@ -1,0 +1,26 @@
+{
+  "model": "claude-sonnet-5-5",
+  "source": "hand-authored",
+  "recordedAt": "2026-11-08T21:00:00.000Z",
+  "site": "extractor",
+  "fixtureKey": "can-i-spend-120-on-stickers-for-calapalooza-tabling",
+  "schemaVersion": 1,
+  "latencyMs": 1180,
+  "scenario": "Org-rule rejection: Marketing has $85.50 left (sheet row 4).",
+  "output": {
+    "intent": "pre_approval",
+    "amount_text": "$120",
+    "purpose": "stickers",
+    "purpose_tag": "marketing_swag",
+    "budget_line": "Marketing",
+    "event_phrase": "Calapalooza tabling",
+    "event_type": "tabling",
+    "attendee_count": null,
+    "items": [
+      "stickers"
+    ],
+    "vendor_hint": null,
+    "project_name": null,
+    "missing": []
+  }
+}
