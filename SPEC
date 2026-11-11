@@ -1,7 +1,7 @@
 # Fronted: spec (v2)
 
 > Fronted — *…so nobody has to front it.*
-> Source of truth for product decisions: `concepts_brief.md`. The original spec is preserved in `SPEC.original.md` and is superseded wherever it conflicts (no Twilio, no Stripe, no single MOCK_MODE, no CSV export, no nudge emails, no receipt eval).
+> Source of truth for product decisions: `docs/planning/concepts_brief.md`. The original spec is preserved in `docs/planning/SPEC.original.md` and is superseded wherever it conflicts (no Twilio, no Stripe, no single MOCK_MODE, no CSV export, no nudge emails, no receipt eval).
 
 ## 1. Stated assumption
 

@@ -6,6 +6,23 @@ Fronted automates the financial reimbursement and virtual card workflow for stud
 
 **Pitch line:** "Ramp enforces the policy you wrote down. Fronted applies the policy your treasurer actually uses, then files it where the university requires."
 
+Built solo for the BBS × Ramp Hackathon (prompt: *automate an outdated financial workflow using the newest AI tools*).
+
+**Try it:** https://fronted-production-a596d732.up.railway.app/simulator. Pick **Side by side**, then click the suggested officer messages in order. The hosted copy runs offline replays of recorded Claude calls and a mock card issuer; locally, `ISSUER=ramp` issues real Ramp sandbox cards. **Reset… → Reset demo** in the header starts over.
+
+**Where to look:**
+
+| What | Where |
+| --- | --- |
+| Hard rules (code, can block) | `src/lib/rules/` |
+| Cited advice and the citation check | `src/lib/advisor/` (`verify.ts` drops made-up IDs and dollar amounts) |
+| Treasurer notes become precedent | `src/lib/advisor/budgetStats.ts` (`S-note-cap-per-head`) |
+| Real Ramp virtual cards | `src/lib/card/rampIssuer.ts` |
+| Agent filing the portal form | `src/lib/portal/`, `worker/portal-worker.ts` |
+| Pure state machine | `src/lib/state/` |
+| Tests | `tests/` (253 unit), `e2e/` (9 end to end) |
+| Spec and design history | `SPEC`, `docs/planning/` |
+
 ## Stated Assumption
 
 ASUC (UC Berkeley student government) holds every org's money. **Assumption, stated openly:** ASUC funds a Ramp-style virtual card program per org. The ASUC portal stays the university's official record and has no API. Since card platforms sync to ERPs through APIs, and this record has none, the agent becomes the sync—filing every card purchase as an expense report. A second assumption: ASUC requires an expense report per purchase (business purpose, attendees, itemized receipt).
