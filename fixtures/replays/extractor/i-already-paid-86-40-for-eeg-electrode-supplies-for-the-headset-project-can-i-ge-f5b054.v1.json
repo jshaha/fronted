@@ -1,16 +1,15 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "extractor",
   "fixtureKey": "i-already-paid-86-40-for-eeg-electrode-supplies-for-the-headset-project-can-i-ge-f5b054",
   "schemaVersion": 1,
-  "latencyMs": 1180,
-  "scenario": "Reimbursement branch: officer already paid out of pocket.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:01:20.142Z",
+  "latencyMs": 2026,
   "output": {
     "intent": "reimbursement",
     "amount_text": "$86.40",
-    "purpose": "EEG electrode supplies",
+    "purpose": "EEG electrode supplies for the headset project",
     "purpose_tag": "hardware_eeg",
     "budget_line": "Project Hardware",
     "event_phrase": null,
@@ -20,7 +19,10 @@
       "EEG electrode supplies"
     ],
     "vendor_hint": null,
-    "project_name": "EEG headset",
-    "missing": []
+    "project_name": "headset project",
+    "missing": [
+      "event",
+      "attendee_count"
+    ]
   }
 }

@@ -19,6 +19,36 @@ describe('advisor', () => {
       expect(amount?.display).toBe('$50.00');
     });
 
+    it('reads a per-head ceiling from the newest treasurer note', () => {
+      const stats = computeBudgetStats({
+        amountCents: 6000,
+        attendeeCount: 14,
+        line: { name: 'Food & Events', sourceRow: 2, remainingCents: 36815 },
+        precedents: [
+          { id: 'P-09', amountCents: 9000, approvedCents: null, attendeeCount: 15, outcome: 'denied', decidedAt: '2026-10-01', treasurerNote: 'Too much. Keep it under $3 a head.' },
+          { id: 'P-31', amountCents: 5000, approvedCents: 5000, attendeeCount: 12, outcome: 'approved', decidedAt: '2026-11-10', treasurerNote: 'Recruiting GMs can go up to about $4.50 a head.' },
+        ],
+        criteria: [],
+      });
+      const cap = stats.find((s) => s.id === 'S-note-cap-per-head');
+      expect(cap?.value).toBe(450);
+      expect(cap?.derivedFrom).toEqual(['P-31']);
+    });
+
+    it('ignores per-head amounts that describe spending rather than set a ceiling', () => {
+      const stats = computeBudgetStats({
+        amountCents: 5000,
+        attendeeCount: 12,
+        line: { name: 'Food & Events', sourceRow: 2, remainingCents: 36815 },
+        precedents: [
+          { id: 'P-05', amountCents: 5580, approvedCents: 4800, attendeeCount: 16, outcome: 'approved_reduced', decidedAt: '2026-03-05', treasurerNote: 'Trim the soda. Aim for about $3 a head.' },
+          { id: 'P-19', amountCents: 4640, approvedCents: 4640, attendeeCount: 16, outcome: 'approved', decidedAt: '2026-10-15', treasurerNote: 'Good: 16 RSVPs, about $2.90 a head.' },
+        ],
+        criteria: [],
+      });
+      expect(stats.find((s) => s.id === 'S-note-cap-per-head')).toBeUndefined();
+    });
+
     it('computes per-head stat when attendee count present', () => {
       const stats = computeBudgetStats({
         amountCents: 9600,

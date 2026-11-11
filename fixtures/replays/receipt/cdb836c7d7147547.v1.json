@@ -1,12 +1,11 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "receipt",
   "fixtureKey": "cdb836c7d7147547",
   "schemaVersion": 1,
-  "latencyMs": 2350,
-  "scenario": "pizza-clean.png: Clean pizza receipt; matches the $48.73 card charge.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:00:42.565Z",
+  "latencyMs": 2692,
   "output": {
     "merchant_name": "Telegraph Slice Co.",
     "merchant_address": "2511 Telegraph Ave, Berkeley, CA 94704",

@@ -28,7 +28,7 @@ The reimbursement branch (officer already paid from personal funds) needs no ass
 | `npm run demo` | Reset, seed, run app + worker in replay mode, open simulator |
 | `npm run reset` | Wipe and recreate the SQLite database |
 | `npm run worker` | Start portal-worker.ts (separate Node process) |
-| `npm run record` | Replace hand-authored replay fixtures with real recordings (requires ANTHROPIC_API_KEY) |
+| `npm run record` | Re-record every demo Claude call with the live API (requires ANTHROPIC_API_KEY) |
 | `npm test` | Run Vitest unit tests |
 | `npm run e2e` | Playwright end-to-end tests in replay mode (port 3100, headless) |
 | `npm run typecheck` | TypeScript check |
@@ -49,7 +49,9 @@ The reimbursement branch (officer already paid from personal funds) needs no ass
 | `PORTAL_URL` | Where the worker files reports; default `http://localhost:3000/mock-portal` |
 | `PORTAL_ALLOWED_ORIGINS` | Allowlist for portal navigation; default `http://localhost:3000,http://127.0.0.1:3000` |
 | `PORTAL_STEP_DELAY_MS` | Slow down browser steps so humans can follow; default 350 |
-| `ISSUER` | Card adapter; only `mock` exists |
+| `ISSUER` | Card adapter: `mock` (default) or `ramp` (real Ramp sandbox virtual cards) |
+| `RAMP_ENV`, `RAMP_CLIENT_ID`, `RAMP_CLIENT_SECRET` | Ramp app credentials for `ISSUER=ramp`; sandbox unless `RAMP_ENV=production` |
+| `RAMP_CARDHOLDER_USER_ID` | Ramp user who holds issued cards; default the first business user |
 | `CARD_BUFFER_PCT` | Buffer above card limit; default 20 |
 | `RECEIPT_TOLERANCE_CENTS` | Reconciliation tolerance; default 50 |
 | `DB_PATH` | SQLite file; default `data/fronted.sqlite` |
@@ -99,7 +101,7 @@ In this build every connector reads seeded items (`data/seed/signals.json`) thro
 
 Default mode: `CLAUDE_MODE=replay` (offline). Recordings live at `fixtures/replays/<site>/<fixtureKey>.v<schemaVersion>.json`, keyed by site + fixtureKey + schemaVersion (not a prompt hash). Sites and keys: `extractor` (message slug), `receipt` (image sha256 prefix), `advisor` (message slug + fingerprint of knowledge rows), `planner` (snapshot structure hash + payload shape).
 
-Missing recordings in replay mode trigger a hard error and write a stub to `fixtures/replays/_missing/` for hand-authoring. Recordings shipped are hand-authored (marked `"source": "hand-authored"`) because no API key was available. `npm run record` replaces them with real ones when you have `ANTHROPIC_API_KEY`.
+Missing recordings in replay mode trigger a hard error and write a stub to `fixtures/replays/_missing/` for hand-authoring. Recordings shipped were captured from live `claude-sonnet-5-5` calls with `npm run record` (marked `"source": "recorded"`). Re-run it after changing a prompt or the seed data.
 
 In replay mode, use the suggested prompts, sample receipts, and the "Use demo note" button in the simulator. Other inputs have no recording and will error.
 
@@ -107,17 +109,17 @@ In replay mode, use the suggested prompts, sample receipts, and the "Use demo no
 
 1. **0:00–0:30 | Reject with a fix.** Officer: "Can I spend $120 on stickers for Calapalooza tabling?" *Tier B checks: Marketing has $85.50 left (sheet row 4). The app rejects and suggests a fix.* See the Check panel citing `H-REM`.
 
-2. **0:30–1:00 | Pass with caution from precedent.** Officer: "Can I spend $50 on pizza for Thursday's GM?" *Echo-back shows the parsed fields. All hard rules pass. Advisor runs: $4.17/head vs. last 5 GMs' $2.90 average (P-14, P-19); C-03 suggests $36. Advice is caution.* Treasure sees the Advice panel with reasons, each citing a past decision.
+2. **0:30–1:00 | Pass with caution from precedent and the org's own inputs.** Officer: "Can I spend $50 on pizza for Thursday's GM?" *Echo-back shows the parsed fields. All hard rules pass. Advisor runs: $4.17/head vs. last 5 GMs' $2.90 average (P-14, P-19); C-03 suggests $36. It also reads what the org is saying right now: it's the recruiting GM on the calendar (CAL-01), Slack shows more signups than RSVPs (SL-01), and the board left recruiting GMs to the treasurer (MIN-01). Advice is caution.* The treasurer sees the Advice panel with reasons, each citing a past decision or a message; the Org inputs panel marks the Slack, calendar and notes items it cited.
 
 3. **1:00–1:30 | Treasurer approves with a note.** *Treasurer taps Approve and writes "Thursday is our recruiting GM, and walk-ins usually beat RSVPs. Recruiting GMs can go up to about $4.50 a head."* The note becomes P-31.
 
-4. **1:30–1:50 | Card issued.** *Last 4, limit $60.00 (+20% buffer), food categories, expiry 2 days after the event.* The officer sees the card detail.
+4. **1:30–1:50 | Card issued.** *With `ISSUER=ramp` this is a real Ramp sandbox virtual card: last 4, limit $60.00 (+20% buffer), food categories (never Alcohol and bars), locked 2 days after the event.* The officer sees the card detail; the same card shows up in the Ramp dashboard.
 
 5. **1:50–2:10 | Simulate purchase.** *Officer taps "Simulate purchase" → $48.73 charged to Telegraph Slice Co. The receipt photo upload prompts appear.* The app sends a normalized `transaction.settled` event.
 
 6. **2:10–2:30 | Receipt read and reconciled.** *Officer uploads pizza receipt. Claude reads items and amounts; code checks alcohol (none), reconciles within $0.50, and queues the filing job.* The portal form appears in the officer chat and fills in field by field as the agent works: it hits a date-format validation error, fixes it, resubmits, and gets a confirmation ID. *The budget panel updates; the request moves to filed.*
 
-7. **2:30–2:50 | Learning loop.** Officer: "Can I spend $60 on pizza for next Thursday's recruiting GM?" *Echo-back passes. Advisor now supports (no caution), citing P-31.* This shows the org's own judgment carries forward.
+7. **2:30–2:50 | Learning loop.** Officer: "Can I spend $60 on pizza for next Thursday's recruiting GM?" *Echo-back passes. Advisor now supports (no caution): $4.29 a head for 14 RSVPs is under the $4.50 ceiling the treasurer set on P-31. Code read that ceiling out of the note; Claude cites it.* This shows the org's own judgment carries forward.
 
 8. **2:50–3:00 | (Optional) Reimbursement or beer.** *Reimbursement: same pipeline, personal-funds payee section in portal.* *Beer receipt: whole request cancelled; card terminated; $59.52 shown unreconciled on the dashboard for the treasurer to resolve.*
 
@@ -133,7 +135,11 @@ Talk track: Use five nouns: officer, treasurer, card, agent, ASUC portal. Use tw
 
 **What if Claude invents a citation?** Dropped. Code verifies every ID exists in the database. If nothing survives, advice becomes unavailable ("no recommendation").
 
-**Is the card real?** Mock issuer behind a `CardIssuer` interface. Field names are modeled on a typical card-issuing API, not claimed Ramp-compatible.
+**Is the card real?** Yes, with `ISSUER=ramp`: approval issues a Ramp sandbox virtual card through Ramp's Developer API, with the limit, merchant categories, and lock date set by code. The app keeps only the last 4 digits. The purchase itself is simulated, because the sandbox has no API to swipe a card; the charge is checked against that card's limit and categories. The hosted demo uses the mock issuer behind the same `CardIssuer` interface.
+
+**Where do Slack and email come in?** The Advisor reads org inputs (Slack, email, calendar, meeting notes) chosen by a fixed query: same event, same purpose tag, or same budget line, last 14 days. It cites them by ID like precedents, and code drops any citation that doesn't exist. Messages are context, never approval. In this build the connectors read seeded items; a live Slack or Gmail connector writes into the same table.
+
+**Is Claude actually running?** On stage it runs in replay mode so the demo can't fail on wifi or rate limits; the recordings were captured from real API calls with `npm run record`. `CLAUDE_MODE=live` calls the API on every request.
 
 **What about beer on the card?** Whole request cancelled on both the card and reimbursement paths. The card is terminated; the charge stays unreconciled on the dashboard for the treasurer to resolve. Lines are never dropped—only the entire request is cancelled.
 
@@ -141,7 +147,7 @@ Talk track: Use five nouns: officer, treasurer, card, agent, ASUC portal. Use tw
 
 **What if the portal changes?** The agent re-plans from a fresh snapshot. A scripted fallback plan runs if planning fails. We don't claim it works with any portal.
 
-**Does it work offline?** Yes, in replay mode. All demo calls have hand-authored recordings.
+**Does it work offline?** Yes, in replay mode. Every demo call has a recording captured from the live API.
 
 ## Testing
 
@@ -165,11 +171,11 @@ Talk track: Use five nouns: officer, treasurer, card, agent, ASUC portal. Use tw
 
 ## Known Limitations & Deferred
 
-- Replays are hand-authored until `npm run record` is run with an API key; demo inputs must match recordings in replay mode.
+- In replay mode, demo inputs must match the recordings; anything else needs `CLAUDE_MODE=live`.
 - Mock portal and ASUC policy text are fictional; no auth beyond the simulator's actor switch.
 - Live Google Sheets sync and the live sheet-cell-edit beat (deferred, stretch).
 - Second portal layout `?v=2` (deferred, stretch).
-- Real card issuer adapter, SMS, Stripe, Ramp API, multiple orgs, RAG, CSV export, nudge emails, receipt eval, HEIC support, auth.
+- Swiping a card (Ramp's sandbox has no purchase API), SMS, Stripe, live Slack/Gmail connectors, multiple orgs, RAG, CSV export, nudge emails, receipt eval, HEIC support, auth.
 
 ## Project Layout
 
@@ -181,7 +187,7 @@ src/
     rules/          Tier A & B rule engine
     advisor/        Claude Advisor, citation check, budget stats
     state/          State machine, transitions, effects
-    card/           CardIssuer interface, mock implementation
+    card/           CardIssuer interface, mock and Ramp implementations
     portal/         PortalFiler, snapshot, plan validator, executor, allowlist
     pipeline/       Orchestrator (runs effects)
     db/             SQLite schema, seed, client

@@ -1,18 +1,17 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-10T23:04:45.341Z",
   "site": "advisor",
   "fixtureKey": "can-i-spend-60-on-pizza-for-next-thursdays-recruiting-gm.kb-717bd3aa.in-dccaaaf3",
   "schemaVersion": 1,
-  "latencyMs": 3150,
-  "scenario": "Next GM before any treasurer note: caution; Slack and board notes noted but no treasurer decision yet.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:02:02.522Z",
+  "latencyMs": 5481,
   "output": {
     "verdict": "caution",
-    "headline": "At [[S-per-head]] a head this is above what GMs usually cost; [[S-suggested]] would match the usual rate.",
+    "headline": "Passes the rules, but at [[S-per-head]] a head it's above the usual rate, so consider trimming toward the suggested amount.",
     "reasons": [
       {
-        "text": "At [[S-per-head]] per RSVP for [[S-attendees]] RSVPs, this is above the last [[S-recent-count]] GMs, which averaged [[S-recent-avg-per-head]] a head (P-19, P-22).",
+        "text": "The request works out to [[S-per-head]] per RSVP, above the C-03 target of [[S-target-per-head]] and above the recent average of [[S-recent-avg-per-head]] across similar approvals.",
         "cites": [
           {
             "type": "budget_stat",
@@ -23,21 +22,17 @@
             "id": "S-recent-avg-per-head"
           },
           {
-            "type": "past_spending",
-            "id": "P-19"
-          },
-          {
-            "type": "past_spending",
-            "id": "P-22"
+            "type": "rule",
+            "id": "C-03"
           }
         ]
       },
       {
-        "text": "C-03 targets about [[S-target-per-head]] per RSVP for GM food, which would put this order at [[S-suggested]].",
+        "text": "Past pizza GMs with similar headcounts were approved near target, e.g. P-14 (14 attendees, treasurer said 'right on target'). The suggested amount at C-03 is [[S-suggested]].",
         "cites": [
           {
-            "type": "rule",
-            "id": "C-03"
+            "type": "past_spending",
+            "id": "P-14"
           },
           {
             "type": "budget_stat",
@@ -46,19 +41,36 @@
         ]
       },
       {
-        "text": "Slack expects more people than the RSVPs show (SL-03) and the board left recruiting GMs to the treasurer (MIN-01), but there is no treasurer decision on that yet, and C-02 says to order against RSVPs.",
+        "text": "The org is saying that 14 RSVPs are confirmed, and walk-ins are expected. C-02 says to order to RSVPs and let leftovers cover walk-ins, so the walk-in interest doesn't justify going over target.",
         "cites": [
           {
             "type": "signal",
-            "id": "SL-03"
+            "id": "CAL-02"
           },
+          {
+            "type": "signal",
+            "id": "SL-01"
+          },
+          {
+            "type": "rule",
+            "id": "C-02"
+          }
+        ]
+      },
+      {
+        "text": "The board wants regular GMs near the usual rate to protect the reserve, though recruiting GMs are decided case by case. The request leaves [[S-above-reserve-after]] above the C-04 reserve, so it's not at risk, but nothing here sets a recruiting exception.",
+        "cites": [
           {
             "type": "signal",
             "id": "MIN-01"
           },
           {
+            "type": "budget_stat",
+            "id": "S-above-reserve-after"
+          },
+          {
             "type": "rule",
-            "id": "C-02"
+            "id": "C-04"
           }
         ]
       }

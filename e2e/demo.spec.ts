@@ -51,7 +51,7 @@ test('happy path: precedent-flagged advice → approve with note → card → pu
   await expect(card).toContainText('Caution');
   await expect(card).toContainText('$4.17');
   await expect(card).toContainText('$2.90');
-  await expect(card.getByRole('button', { name: /P-14/ }).first()).toBeVisible();
+  await expect(card.getByRole('button', { name: /P-\d+/ }).first()).toBeVisible();
   await expect(card.getByRole('button', { name: 'Approve suggested $36.00' })).toBeVisible();
 
   await card.getByLabel(/^Note/).fill(DEMO.gmPizzaNote);

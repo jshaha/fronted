@@ -1,18 +1,17 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-10T23:04:45.307Z",
   "site": "advisor",
   "fixtureKey": "can-i-spend-60-on-pizza-for-next-thursdays-recruiting-gm.kb-04b2a8d6.in-dccaaaf3",
   "schemaVersion": 1,
-  "latencyMs": 3260,
-  "scenario": "Next GM after the P-31 note: support, cites P-31 plus the lab-tours calendar event and Slack turnout.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:01:18.045Z",
+  "latencyMs": 4568,
   "output": {
     "verdict": "support",
-    "headline": "This fits the exception the treasurer set for recruiting GMs on P-31.",
+    "headline": "This recruiting GM pizza order fits the treasurer's exception for recruiting GMs, so the higher per-head rate is backed.",
     "reasons": [
       {
-        "text": "On P-31 the treasurer approved the last recruiting GM above the usual rate and set a higher per-head ceiling for recruiting GMs, since walk-ins beat RSVPs. At [[S-per-head]] per RSVP, this request sits under that ceiling.",
+        "text": "At [[S-per-head]] a head, it is above the usual [[S-target-per-head]] target (C-03) and the recent average of [[S-recent-avg-per-head]], but under the [[S-note-cap-per-head]] ceiling the treasurer set on P-31 for recruiting GMs.",
         "cites": [
           {
             "type": "past_spending",
@@ -21,49 +20,49 @@
           {
             "type": "budget_stat",
             "id": "S-per-head"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-note-cap-per-head"
+          },
+          {
+            "type": "rule",
+            "id": "C-03"
           }
         ]
       },
       {
-        "text": "It is another recruiting GM (CAL-02), and Slack expects the Calapalooza table to send more people than the RSVPs show (SL-03), the same pattern as last week's tabling (SL-01).",
+        "text": "This is a recruiting GM with lab tours, the same kind of event P-31 covered. The board notes say recruiting GMs are decided case by case because new members come from them.",
         "cites": [
+          {
+            "type": "signal",
+            "id": "MIN-01"
+          },
           {
             "type": "signal",
             "id": "CAL-02"
-          },
-          {
-            "type": "signal",
-            "id": "SL-03"
-          },
-          {
-            "type": "signal",
-            "id": "SL-01"
           }
         ]
       },
       {
-        "text": "That note is newer than C-02 and C-03, so it reads as an exception for recruiting GMs rather than a change for regular ones, which matches the board notes (MIN-01).",
+        "text": "The order matches the [[S-attendees]] RSVPs (C-02). Slack says many more people plan to show up, so the headcount is likely to be higher than the RSVPs.",
         "cites": [
-          {
-            "type": "past_spending",
-            "id": "P-31"
-          },
           {
             "type": "rule",
             "id": "C-02"
           },
           {
-            "type": "rule",
-            "id": "C-03"
+            "type": "signal",
+            "id": "SL-01"
           },
           {
             "type": "signal",
-            "id": "MIN-01"
+            "id": "SL-03"
           }
         ]
       },
       {
-        "text": "Approving still leaves [[S-above-reserve-after]] above the C-04 reserve, with [[S-events-left]] GMs on the calendar.",
+        "text": "After this, [[S-above-reserve-after]] stays above the [[S-reserve]] reserve (C-04), so the end-of-semester social is still covered.",
         "cites": [
           {
             "type": "budget_stat",
@@ -72,10 +71,6 @@
           {
             "type": "rule",
             "id": "C-04"
-          },
-          {
-            "type": "budget_stat",
-            "id": "S-events-left"
           }
         ]
       }

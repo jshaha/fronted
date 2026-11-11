@@ -1,54 +1,56 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-10T23:06:35.645Z",
   "site": "advisor",
   "fixtureKey": "i-already-paid-86-40-for-eeg-electrode-supplies-for-the-headset-project-can-i-ge-f5b054.kb-c67a4a7a.in-4d3dbd80",
   "schemaVersion": 1,
-  "latencyMs": 3330,
-  "scenario": "Electrode reimbursement: support; Slack post, forwarded order email and board notes corroborate it.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:01:28.736Z",
+  "latencyMs": 5528,
   "output": {
     "verdict": "support",
-    "headline": "Routine consumables for the headset build, and the order trail checks out.",
+    "headline": "This reimbursement looks consistent with how the org has handled EEG consumables for the headset build, and it's well within the filing window.",
     "reasons": [
       {
-        "text": "Electrode supplies for the headset match P-18, which the treasurer approved as consumables for the same build.",
+        "text": "A very similar request, electrode gel and snap leads for the headset, was approved on P-18 with the treasurer calling them fine consumables. This request is the same kind of purchase at a comparable size.",
         "cites": [
           {
             "type": "past_spending",
             "id": "P-18"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-amount"
           }
         ]
       },
       {
-        "text": "The paper trail lines up: Arjun posted the order in #hardware before buying (SL-04), and the vendor's order confirmation was forwarded to the treasurer inbox (EM-02).",
+        "text": "C-05 asks for EEG consumables sized to one build cycle with no stockpiling. The order of electrode kits and gel matches the invoice and was placed because the build was blocked on them, so it reads as a single-cycle purchase.",
         "cites": [
           {
-            "type": "signal",
-            "id": "SL-04"
+            "type": "rule",
+            "id": "C-05"
           },
           {
             "type": "signal",
             "id": "EM-02"
-          }
-        ]
-      },
-      {
-        "text": "The board approved headset materials as needed this semester with Arjun as the purchaser (MIN-02), and C-05 asks for consumables sized to one build cycle, which this fits.",
-        "cites": [
-          {
-            "type": "signal",
-            "id": "MIN-02"
           },
           {
-            "type": "rule",
-            "id": "C-05"
+            "type": "signal",
+            "id": "SL-04"
           }
         ]
       },
       {
-        "text": "It is under the [[S-threshold-C-06]] mark in C-06, so no extra project-lead sign-off is needed, and Project Hardware keeps [[S-line-remaining-after]].",
+        "text": "It was filed [[S-days-since-purchase]] days after purchase, inside the C-08 window. It is also far below the C-06 threshold of [[S-threshold-C-06]], so the project lead and demo date requirement does not apply.",
         "cites": [
+          {
+            "type": "rule",
+            "id": "C-08"
+          },
+          {
+            "type": "budget_stat",
+            "id": "S-days-since-purchase"
+          },
           {
             "type": "rule",
             "id": "C-06"
@@ -56,6 +58,15 @@
           {
             "type": "budget_stat",
             "id": "S-threshold-C-06"
+          }
+        ]
+      },
+      {
+        "text": "The board said recently that materials can be bought as needed this semester and that Arjun owns purchasing for the headset team. Project Hardware would still have [[S-line-remaining-after]] left after this.",
+        "cites": [
+          {
+            "type": "signal",
+            "id": "MIN-02"
           },
           {
             "type": "budget_stat",

@@ -1,12 +1,11 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "receipt",
   "fixtureKey": "dbdf671ad5dfe302",
   "schemaVersion": 1,
-  "latencyMs": 2350,
-  "scenario": "pizza-beer.png: Pizza + a six-pack: alcohol cancels the whole request.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:02:17.993Z",
+  "latencyMs": 1975,
   "output": {
     "merchant_name": "Telegraph Slice Co.",
     "merchant_address": "2511 Telegraph Ave, Berkeley, CA 94704",

@@ -1,12 +1,11 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "planner",
   "fixtureKey": "v1.personal.46b57263",
   "schemaVersion": 1,
-  "latencyMs": 2780,
-  "scenario": "Portal rejected round 1: payee section now visible; date must be MM/DD/YYYY. Fix only those.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:01:38.706Z",
+  "latencyMs": 2766,
   "output": {
     "steps": [
       {
@@ -15,7 +14,8 @@
           "role": "textbox",
           "name": "Payee Full Name"
         },
-        "value_ref": "payee_name"
+        "value_ref": "payee_name",
+        "why": "Required payee name is empty"
       },
       {
         "action": "fill",
@@ -23,7 +23,8 @@
           "role": "textbox",
           "name": "Payee Email"
         },
-        "value_ref": "payee_email"
+        "value_ref": "payee_email",
+        "why": "Required payee email is empty"
       },
       {
         "action": "fill",
@@ -31,7 +32,8 @@
           "role": "textbox",
           "name": "Payee Student ID (SID)"
         },
-        "value_ref": "payee_student_id"
+        "value_ref": "payee_student_id",
+        "why": "Required SID is empty"
       },
       {
         "action": "fill",
@@ -40,17 +42,17 @@
           "name": "Transaction Date"
         },
         "value_ref": "transaction_date_us",
-        "why": "portal wants MM/DD/YYYY"
+        "why": "Date must be MM/DD/YYYY"
       },
       {
         "action": "click",
         "target": {
           "role": "button",
           "name": "Submit Expense Report"
-        },
-        "why": "resubmit"
+        }
       }
     ],
-    "submits": true
+    "submits": true,
+    "notes": "Only fixed the fields showing errors; all other fields already match the payload."
   }
 }

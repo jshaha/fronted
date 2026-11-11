@@ -1,12 +1,11 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "receipt",
   "fixtureKey": "950d936dd0f0e848",
   "schemaVersion": 1,
-  "latencyMs": 2350,
-  "scenario": "hardware-reimbursement.png: Electrode supplies paid out of pocket.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:01:23.194Z",
+  "latencyMs": 3045,
   "output": {
     "merchant_name": "Ohm & Co. Electronics",
     "merchant_address": "1820 University Ave, Berkeley, CA 94703",
@@ -16,13 +15,13 @@
         "description": "Gold Cup EEG Electrodes (10 pk)",
         "quantity": 2,
         "amount_text": "49.90",
-        "category": "hardware"
+        "category": "other"
       },
       {
         "description": "Ten20 Conductive Paste (3 × 4oz)",
         "quantity": 1,
         "amount_text": "18.50",
-        "category": "hardware"
+        "category": "other"
       },
       {
         "description": "Shielded Snap Lead Wires (5 pk)",

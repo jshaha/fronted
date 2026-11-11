@@ -1,16 +1,15 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "extractor",
   "fixtureKey": "can-i-spend-60-on-pizza-for-next-thursdays-recruiting-gm",
   "schemaVersion": 1,
-  "latencyMs": 1180,
-  "scenario": "Learning loop: same kind of request after the treasurer note.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:01:57.022Z",
+  "latencyMs": 2177,
   "output": {
     "intent": "pre_approval",
     "amount_text": "$60",
-    "purpose": "pizza",
+    "purpose": "pizza for next Thursday's recruiting GM",
     "purpose_tag": "gm_food",
     "budget_line": "Food & Events",
     "event_phrase": "next Thursday's recruiting GM",
@@ -22,7 +21,8 @@
     "vendor_hint": null,
     "project_name": null,
     "missing": [
-      "attendee_count"
+      "attendee_count",
+      "project_name"
     ]
   }
 }

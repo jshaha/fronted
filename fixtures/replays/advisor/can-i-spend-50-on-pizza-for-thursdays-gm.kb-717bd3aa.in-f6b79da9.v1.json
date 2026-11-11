@@ -1,19 +1,22 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-10T23:02:42.686Z",
   "site": "advisor",
   "fixtureKey": "can-i-spend-50-on-pizza-for-thursdays-gm.kb-717bd3aa.in-f6b79da9",
   "schemaVersion": 1,
-  "latencyMs": 3480,
-  "scenario": "$50 GM pizza: caution from precedent, suggest $36; Slack and board notes flag the recruiting-GM exception for the treasurer.",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:02:10.803Z",
+  "latencyMs": 5894,
   "output": {
     "verdict": "caution",
-    "headline": "At [[S-per-head]] a head this runs above recent GMs; [[S-suggested]] fits the usual rate, though Slack points to more walk-ins for this recruiting GM.",
+    "headline": "The $50 request is above the usual per-head rate for 12 RSVPs, though turnout may be higher at this recruiting GM, so a smaller amount fits precedent better.",
     "reasons": [
       {
-        "text": "At [[S-per-head]] per RSVP for [[S-attendees]] RSVPs, this is above the last [[S-recent-count]] GMs, which averaged [[S-recent-avg-per-head]] a head (P-14, P-19).",
+        "text": "At [[S-per-head]] a head, this is above the [[S-target-per-head]] target and the [[S-recent-avg-per-head]] average of the last [[S-recent-count]] similar approvals (e.g. P-14, P-19).",
         "cites": [
+          {
+            "type": "rule",
+            "id": "C-03"
+          },
           {
             "type": "budget_stat",
             "id": "S-per-head"
@@ -33,32 +36,11 @@
         ]
       },
       {
-        "text": "C-03 targets about [[S-target-per-head]] per RSVP for GM food; at that rate this order would be [[S-suggested]].",
+        "text": "Priya says many more people plan to just show up than RSVP'd, so turnout could be higher than the RSVP count. But the org orders against RSVPs and covers walk-ins with leftovers (see P-09), and the message is context, not approval.",
         "cites": [
-          {
-            "type": "rule",
-            "id": "C-03"
-          },
-          {
-            "type": "budget_stat",
-            "id": "S-suggested"
-          }
-        ]
-      },
-      {
-        "text": "This is the recruiting GM (CAL-01): Slack shows far more interest-sheet signups than RSVPs (SL-01), and the board left recruiting GMs to the treasurer's call (MIN-01). C-02 still says to order against RSVPs, and P-09 was denied for over-ordering.",
-        "cites": [
-          {
-            "type": "signal",
-            "id": "CAL-01"
-          },
           {
             "type": "signal",
             "id": "SL-01"
-          },
-          {
-            "type": "signal",
-            "id": "MIN-01"
           },
           {
             "type": "rule",
@@ -67,23 +49,40 @@
           {
             "type": "past_spending",
             "id": "P-09"
+          },
+          {
+            "type": "signal",
+            "id": "CAL-01"
           }
         ]
       },
       {
-        "text": "[[S-events-left]] GMs are still on the calendar; approving leaves [[S-above-reserve-after]] above the C-04 reserve to cover them.",
+        "text": "The board notes say recruiting GMs are decided case by case by Jordan, and the only precedent for going a bit over is the kickoff GM (P-01). Treat this as a judgment call for Jordan, not a standing exception.",
         "cites": [
           {
-            "type": "budget_stat",
-            "id": "S-events-left"
+            "type": "signal",
+            "id": "MIN-01"
+          },
+          {
+            "type": "past_spending",
+            "id": "P-01"
+          }
+        ]
+      },
+      {
+        "text": "It leaves [[S-above-reserve-after]] above the [[S-reserve]] reserve with [[S-events-left]] GMs still to go, so the budget is fine, but a lower amount protects the reserve.",
+        "cites": [
+          {
+            "type": "rule",
+            "id": "C-04"
           },
           {
             "type": "budget_stat",
             "id": "S-above-reserve-after"
           },
           {
-            "type": "rule",
-            "id": "C-04"
+            "type": "budget_stat",
+            "id": "S-events-left"
           }
         ]
       }

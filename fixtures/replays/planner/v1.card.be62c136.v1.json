@@ -1,12 +1,11 @@
 {
-  "model": "claude-sonnet-5-5",
-  "source": "hand-authored",
-  "recordedAt": "2026-11-08T21:00:00.000Z",
   "site": "planner",
   "fixtureKey": "v1.card.be62c136",
   "schemaVersion": 1,
-  "latencyMs": 2780,
-  "scenario": "Blank form, card payload: fill everything visible and submit (uses the ISO date, which the portal rejects).",
+  "model": "claude-sonnet-5-5",
+  "source": "recorded",
+  "recordedAt": "2026-11-11T07:00:49.916Z",
+  "latencyMs": 5402,
   "output": {
     "steps": [
       {
@@ -47,8 +46,7 @@
           "role": "textbox",
           "name": "External Reference"
         },
-        "value_ref": "external_ref",
-        "why": "unique reference so the portal can reject duplicates"
+        "value_ref": "external_ref"
       },
       {
         "action": "select",
@@ -72,8 +70,7 @@
           "role": "textbox",
           "name": "Transaction Date"
         },
-        "value_ref": "transaction_date",
-        "why": "no format shown; using the ISO date"
+        "value_ref": "transaction_date"
       },
       {
         "action": "fill",
@@ -143,11 +140,9 @@
         "target": {
           "role": "button",
           "name": "Submit Expense Report"
-        },
-        "why": "submit"
+        }
       }
     ],
-    "submits": true,
-    "notes": "Selecting ASUC Program Card may reveal more fields; will handle on the next snapshot."
+    "submits": true
   }
 }

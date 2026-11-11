@@ -12,7 +12,15 @@ export type StatPrecedent = {
   attendeeCount: number | null;
   outcome: 'approved' | 'approved_reduced' | 'denied';
   decidedAt: string;
+  treasurerNote?: string | null;
 };
+
+/** A per-head ceiling stated in a treasurer note ("up to about $4.50 a head"); descriptive amounts like "about $2.90 a head" are not ceilings, parsed by code. */
+const NOTE_PER_HEAD = /(?:up to|under|no more than|at most|max(?:imum)? of|capped at|ceiling of)\s+(?:about\s+|around\s+)?\$\s?(\d+(?:\.\d{1,2})?)\s*(?:a|per|\/)\s*(?:head|person|attendee)/i;
+export function notePerHeadCents(note: string | null | undefined): number | null {
+  const m = note?.match(NOTE_PER_HEAD);
+  return m ? Math.round(Number(m[1]) * 100) : null;
+}
 
 export type StatCriterion = { id: string; paramCents: number | null; paramKind: 'per_head_target' | 'reserve_floor' | 'threshold' | null };
 
@@ -79,6 +87,14 @@ export function computeBudgetStats(input: StatsInput): BudgetStat[] {
       ),
     );
     out.push(count('S-recent-count', 'Similar approvals averaged', recent.length, recent.map((p) => p.id)));
+  }
+
+  // The newest treasurer note that sets a per-head ceiling for this kind of spending.
+  const capped = input.precedents
+    .filter((p) => p.outcome !== 'denied' && notePerHeadCents(p.treasurerNote) != null)
+    .sort((a, b) => (a.decidedAt < b.decidedAt ? 1 : a.decidedAt > b.decidedAt ? -1 : b.id.localeCompare(a.id)))[0];
+  if (capped) {
+    out.push(cents('S-note-cap-per-head', `Per-head ceiling in the treasurer's note on ${capped.id}`, notePerHeadCents(capped.treasurerNote)!, [capped.id]));
   }
 
   for (const c of input.criteria) {
